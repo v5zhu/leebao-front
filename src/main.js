@@ -71,7 +71,7 @@ router.beforeEach((to, from, next) => {
 
 			if (userinfo.token && to.path === '/login') {
 				next({
-					path: '/demo/user/list'
+					path: '/monitor/news/visitor'
 				});
 			} else {
 				NProgress.start();

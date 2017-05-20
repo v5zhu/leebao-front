@@ -29,3 +29,4 @@ module.exports = [{
 	.concat(require('./router/manage.js'))
 	.concat(require('./router/components.js'))
 	.concat(require('./router/advance.js'))
+	.concat(require('./router/pregnancy.js'))
