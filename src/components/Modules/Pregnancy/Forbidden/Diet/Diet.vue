@@ -1,16 +1,5 @@
 <template>
   <div class="list">
-    <el-form :inline="true" :model='selectData' class="demo-form-inline">
-      <el-form-item>
-        <el-input placeholder="辐射源" v-model='selectData.name'></el-input>
-      </el-form-item>
-      <el-form-item>
-        <el-input placeholder="指数" v-model='selectData.star'></el-input>
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" @click='onSelectData'>查询</el-button>
-      </el-form-item>
-    </el-form>
     <el-table :data="tableData" border style="width: 100%" align='center'>
       <el-table-column
         :prop="fields.name.info.prop"
@@ -20,24 +9,6 @@
         :sortable="fields.name.info.sortable">
       </el-table-column>
       <el-table-column
-        :prop="fields.star.info.prop"
-        :sortable="fields.star.info.sortable"
-        :label="fields.star.info.label"
-        :align="fields.star.style.align"
-        :width="fields.star.style.width"
-        :formatter="formatterStar"
-        :filters="fields.star.filter.list"
-        :filter-method="filterStar"
-        :filter-multiple="fields.star.filter.multiple">
-      </el-table-column>
-      <el-table-column
-        :prop="fields.feature.info.prop"
-        :label="fields.feature.info.label"
-        :align="fields.feature.style.align"
-        :width="fields.feature.style.width"
-        :sortable="fields.feature.info.sortable">
-      </el-table-column>
-      <el-table-column
         :prop="fields.harm.info.prop"
         :label="fields.harm.info.label"
         :align="fields.harm.style.align"
@@ -45,11 +16,25 @@
         :sortable="fields.harm.info.sortable">
       </el-table-column>
       <el-table-column
-        :prop="fields.defense.info.prop"
-        :label="fields.defense.info.label"
-        :align="fields.defense.style.align"
-        :width="fields.defense.style.width"
-        :sortable="fields.defense.info.sortable">
+        :prop="fields.consequence.info.prop"
+        :label="fields.consequence.info.label"
+        :align="fields.consequence.style.align"
+        :width="fields.consequence.style.width"
+        :sortable="fields.consequence.info.sortable">
+      </el-table-column>
+      <el-table-column
+        :prop="fields.remark.info.prop"
+        :label="fields.remark.info.label"
+        :align="fields.remark.style.align"
+        :width="fields.remark.style.width"
+        :sortable="fields.remark.info.sortable">
+      </el-table-column>
+      <el-table-column
+        :prop="fields.advice.info.prop"
+        :label="fields.advice.info.label"
+        :align="fields.advice.style.align"
+        :width="fields.advice.style.width"
+        :sortable="fields.advice.info.sortable">
       </el-table-column>
       <el-table-column
         :prop="fields.date.info.prop"
@@ -66,12 +51,6 @@
         :sortable="fields.author.info.sortable">
       </el-table-column>
     </el-table>
-    <ul type="circle" style="margin-left: 20px">
-      <li>挑选正规厂家生产的合格家电产品</li>
-      <li>不要把家用电器摆的过于集中</li>
-      <li>缩短使用电器的时间</li>
-      <li>有条件的孕妈咪可使用产品质量合格,有相关检测证明的防辐射服装、电视防辐射屏、防辐射窗帘等</li>
-    </ul>
   </div>
 </template>
 
@@ -81,75 +60,43 @@
     data() {
       return {
         tableData: [{
-          name: 'X线',
-          star: '5',
-          feature: '波长短穿透性强,可能产生反射反应',
-          harm: '怀孕前3个月胎儿处于器官形成关键期,X光可能导致细胞组织突变从而流产或先天畸形',
-          defense: '医院X光照射腹部遮盖,尽量避免此类检查',
+          name: '辣椒',
+          harm: '1、吃辣椒太多易便秘：孕期本来就容易便秘，如果吃辣椒尤其是干辣椒太多，反而更易加重病情。便秘时用力屏气，腹压加大，使子宫、胎儿、血管局部受挤压致供血不足，易引起血压增高、流产、早产或胎儿畸形。\n2、对胎宝带来不利影响：辛辣物质会随着母亲的血液循环进入胎儿体内，可能会刺激到宝宝，给胎宝造成不良影响。\n3、过量吃辣也会中毒：辣椒辛热有毒，过食可使体内湿从热化，表现为皮肤痤疮，血压升高，痔疮加重，鼻出血等。长期大量食用辣椒，会引起中毒表现，如胃脘灼热感、腹胀、腹痛、恶心、呕吐、玄晕，甚至呕血、尿血、衄血、血压升高或下降。',
+          consequence: '易引起血压增高、流产、早产或胎儿畸形',
+          remark: '1、临产前的准妈：准妈临产吃辣椒，可间接地引起子宫破裂、子痫等。\n2、前置胎盘的准妈：属于前置胎盘的妈妈要绝对禁止吃辣椒。',
+          advice: '尽量少吃',
           date: '2017-05-20',
           author: 'vvboot',
         }, {
-          name: '电热毯',
-          star: '5',
-          feature: '通电后产生电磁场,产生电磁辐射',
-          harm: '容易导致胎儿细胞分裂,发生异常改变,骨骼对电磁辐射最为敏感,影响胎儿大脑、神经、骨骼和心脏',
-          defense: '禁止使用电热毯',
+          name: '花椒',
+          harm: '孕妇本身易上火,花椒属于热性调料易导致便秘',
+          consequence: '便秘',
+          remark: '...',
+          advice: '尽量少吃',
           date: '2017-05-20',
           author: 'vvboot',
         }, {
-          name: '电吹风',
-          star: '4',
-          feature: '开启和关闭时辐射最大,功率越大辐射越大',
-          harm: '头晕、疲乏无力、记忆力减退、食欲减退、失眠、健忘等亚健康状态',
-          defense: '尽量不要用,使用干发毛巾或干毛帽代替',
+          name: '螃蟹',
+          harm: '螃蟹中含有一种成分可以直接影响到胎盘,阻断胎盘的供给,特别是早孕期间,吃螃蟹,可以导致滑胎,先兆流产,尤其是蟹夹',
+          consequence: '流产',
+          remark: '极少部分吃过也没事,但为安全忍一时平安健康',
+          advice: '尽量不吃',
           date: '2017-05-20',
           author: 'vvboot',
         }, {
-          name: '微波炉',
-          star: '4',
-          feature: '微波炉辐射小于12伏米才符合国家标准,使用请遵循说明书',
-          harm: '',
-          defense: '不要放卧室,人不要站旁边,不用时拔掉电源,停止运行时再过去处理食品,准妈妈勿用微波炉',
+          name: '海带',
+          harm: '好处:海带中的碘极为丰富，适量吃可以让胎儿获得必需的甲状腺素，促进宝宝大脑发育;坏处:孕妇不要多吃海带。这是因为海带中的碘可随血液循环进入胎儿体内，引起甲状腺功能障碍',
+          consequence: '甲状腺功能障碍',
+          remark: '孕妇吃海带后不要马上喝茶（茶含鞣酸），也不要立刻吃酸涩的水果（酸涩水果含植物酸）。因为海带中含有丰富的铁，以上两种食物都会阻碍体内铁的吸收',
+          advice: '少吃',
           date: '2017-05-20',
           author: 'vvboot',
         }, {
-          name: '电脑',
-          star: '3',
-          feature: '开机时周边存在电磁辐射,包括X射线、紫外线、可见光、红外线和特高频、高频、中频及极低频电磁场;背面辐射最强,两侧其次,正面最弱',
-          harm: '在细胞膜水平上干扰细胞的代谢和增殖,从而影响胚胎的发育,其次电脑辐射是导致宝宝听力残疾的头号危险因素',
-          defense: '保持安全距离,穿防辐射服,控制时间',
-          date: '2017-05-20',
-          author: 'vvboot',
-        }, {
-          name: '手机',
-          star: '2',
-          feature: '工作状态时向基站传送无线电波,通话接通时比通话中辐射高20倍,信号不好电量低时,辐射更高',
-          harm: '或多或少被人体吸收,从而改变人体组织',
-          defense: '专用耳机、麦克风接听电话,减少通话时间,电话未接通时避免靠近耳部',
-          date: '2017-05-20',
-          author: 'vvboot',
-        }, {
-          name: '电视机',
-          star: '2',
-          feature: '传统电视电子束打在荧光粉上的瞬间会产生电磁辐射,产生X射线,液晶电视相对辐射小很多',
-          harm: '...',
-          defense: '保持2米以上距离,连续不能超过2小时,看完电视洗脸',
-          date: '2017-05-20',
-          author: 'vvboot',
-        }, {
-          name: '复印机/打印机',
-          star: '1',
-          feature: '有电流就有电磁波即存在辐射,打印机的电子线圈和风扇部位辐射最大',
-          harm: '...',
-          defense: '办公一族保持30厘米以上或穿防辐射服',
-          date: '2017-05-20',
-          author: 'vvboot',
-        }, {
-          name: '安检',
-          star: '1',
-          feature: '主要通过电磁场的辐射对金属物探测,电磁辐射小',
-          harm: '...',
-          defense: '不超过6分钟,减少乘飞机,准妈妈尽快通过安检',
+          name: '甲鱼',
+          harm: '早期不要吃,易导致流产,中后期少吃,注意吃法和量,最好是甲鱼汤',
+          consequence: '早期流产',
+          remark: '不能与甲鱼一起吃的食物，例如桃子、黄鳝、芹菜等等。以免误食中毒。还有变质了、死了的甲鱼也不能吃',
+          advice: '早期不吃,后期少吃',
           date: '2017-05-20',
           author: 'vvboot',
         }],
@@ -162,78 +109,60 @@
           name: {
             info: {
               prop: 'name',
-              label: '辐射源',
+              label: '食物',
               sortable: true
             },
             filter: {},
             style: {
-              width: '130',
-              align: 'center'
-            }
-          },
-          star: {
-            info: {
-              prop: 'star',
-              label: '辐射指数',
-              sortable: true
-            },
-            filter: {
-              list: [{
-                text: '★',
-                value: 1
-              }, {
-                text: '★★',
-                value: 2
-              }, {
-                text: '★★★',
-                value: 3
-              }, {
-                text: '★★★★',
-                value: 4
-              }, {
-                text: '★★★★★',
-                value: 5
-              }],
-              multiple: false
-            },
-            style: {
-              width: '150',
-              align: 'center'
-            }
-          },
-          feature: {
-            info: {
-              prop: 'feature',
-              label: '辐射源特征',
-              sortable: true
-            },
-            filter: {},
-            style: {
-              width: '170',
+              width: '100',
               align: 'center'
             }
           },
           harm: {
             info: {
               prop: 'harm',
-              label: '辐射损害',
+              label: '害处',
               sortable: true
             },
             filter: {},
             style: {
-              width: '250',
+              width: '450',
               align: 'center'
             }
           },
-          defense: {
+          consequence: {
             info: {
-              prop: 'defense',
-              label: '防范措施',
+              prop: 'consequence',
+              label: '食用后果',
+              sortable: true
+            },
+            filter: {},
+            style: {
+              width: '140',
+              align: 'center'
+            }
+          },
+          remark: {
+            info: {
+              prop: 'remark',
+              label: '备注',
               sortable: true
             },
             filter: {},
             style: {
               width: '170',
+              align: 'center'
+            }
+          },
+          advice: {
+            info: {
+              prop: 'advice',
+              label: '强烈建议',
+              sortable: true
+            },
+            filter: {},
+            style: {
+              width: '120',
               align: 'center'
             }
           },
@@ -245,7 +174,7 @@
             },
             filter: {},
             style: {
-              width: '150',
+              width: '100',
               align: 'center'
             }
           },
@@ -257,7 +186,7 @@
             },
             filter: {},
             style: {
-              width: '180',
+              width: '120',
               align: 'center'
             }
           }
@@ -265,25 +194,6 @@
       }
     },
     methods: {
-      /**
-       * 格式化辐射指数
-       */
-      formatterStar(item) {
-        if (item.star == 1) {
-          return '★';
-        } else if (item.star == 2) {
-          return '★★';
-        } else if (item.star == 3) {
-          return '★★★';
-        } else if (item.star == 4) {
-          return '★★★★';
-        } else if (item.star == 5) {
-          return '★★★★★';
-        }
-      },
-      filterStar(value, item) {
-        return item.star == value;
-      },
       onSelectData() {
 
       }
@@ -291,7 +201,7 @@
   }
 </script>
 <style scoped>
-    *{
-      font-size: 12px;
-    }
+  * {
+    font-size: 12px;
+  }
 </style>

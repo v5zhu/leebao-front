@@ -1,6 +1,7 @@
 module.exports = {
   Echarts: require('./Echarts/Echarts.vue'),
   Form: require('./Form/Form.vue'),
+  Conflict: require('./Conflict/Conflict.vue'),
   Radiation: require('./Radiation/Radiation.vue'),
   Diet: require('./Diet/Diet.vue'),
   Fruit: require('./Fruit/Fruit.vue'),

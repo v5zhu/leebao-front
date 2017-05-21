@@ -18,8 +18,13 @@ module.exports = [{
     name: '孕期禁忌',
     icon: 'inbox',
     component: Content,
-    redirect: '/pregnancy/forbidden/radiation',
+    redirect: '/pregnancy/forbidden/conflict',
     children: [{
+      path: 'conflict',
+      name: '食物搭配冲突',
+      icon: 'bar-chart',
+      component: Modules.Pregnancy.Forbidden.Conflict
+    }, {
       path: 'radiation',
       name: '孕期防辐射禁忌',
       icon: 'bar-chart',
