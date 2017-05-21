@@ -23,17 +23,17 @@ module.exports = [{
       path: 'radiation',
       name: '孕期防辐射禁忌',
       icon: 'bar-chart',
-      component: Modules.Function.Open.Echarts
+      component: Modules.Pregnancy.Forbidden.List
     }, {
       path: 'diet',
       name: '孕期饮食禁忌',
       icon: 'bar-chart',
-      component: Modules.Function.Open.Echarts
+      component: Modules.Pregnancy.Forbidden.Echarts
     }, {
       path: 'fruit',
       name: '孕期水果禁忌',
       icon: 'bar-chart',
-      component: Modules.Function.Open.Echarts
+      component: Modules.Pregnancy.Forbidden.Form
     }, {
       path: 'life',
       name: '孕期生活禁忌',

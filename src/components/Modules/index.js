@@ -3,4 +3,5 @@ module.exports = {
 	Demo: require('./Demo/'),
 	Adv: require('./Advince/'),
 	Components: require('./Components/'),
+	Pregnancy: require('./Pregnancy/'),
 };
