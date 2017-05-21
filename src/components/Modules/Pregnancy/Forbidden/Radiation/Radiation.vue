@@ -11,7 +11,7 @@
         <el-button type="primary" @click='onSelectData'>查询</el-button>
       </el-form-item>
     </el-form>
-    <el-table :data="tableData" border style="width: 100%" align='center'>
+    <el-table :data="tableData" border fit style="width: 100%" align='center'>
       <el-table-column
         :prop="fields.name.info.prop"
         :label="fields.name.info.label"
@@ -84,7 +84,10 @@
             <p>Q Q: {{ scope.row.author.qq }}</p>
             <div slot="reference" class="name-wrapper">
               <el-tag>
-                <el-icon name="time"></el-icon>&nbsp;&nbsp;{{ scope.row.author.nickname }}
+                <span class="fa fa-at" style="color:yellowgreen"></span>
+                {{ scope.row.author.nickname }}
+
+
 
 
               </el-tag>
@@ -93,6 +96,19 @@
         </template>
       </el-table-column>
     </el-table>
+    <template>
+      <div class="block">
+        <el-pagination
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+          :current-page="currentPage4"
+          :page-sizes="pageSizes"
+          :page-size="pageSize"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="total">
+        </el-pagination>
+      </div>
+    </template>
     <ul type="circle" style="margin-left: 20px">
       <li>挑选正规厂家生产的合格家电产品</li>
       <li>不要把家用电器摆的过于集中</li>
@@ -107,6 +123,10 @@
     name: 'list',
     data() {
       return {
+        pageSizes: [5, 10, 20, 50, 100],
+        pageSize: 5,
+        total: 20,
+        currentPage4: 4,
         tableData: [{
           name: 'X线',
           star: '5',
@@ -385,6 +405,12 @@
       },
       onSelectData() {
 
+      },
+      handleSizeChange(val) {
+        console.log(`每页 ${val} 条`);
+      },
+      handleCurrentChange(val) {
+        console.log(`当前页: ${val}`);
       }
     }
   }
