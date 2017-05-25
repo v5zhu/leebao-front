@@ -9,8 +9,77 @@
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click='onSelectData'>查询</el-button>
+        <el-button type="primary" @click='setDialogInfo'>添加新的孕期禁忌项</el-button>
       </el-form-item>
     </el-form>
+
+    <!--start新增模态框-->
+    <el-dialog size="small" :title="dialog.title"
+               v-model="dialog.show_pass">
+      <el-form style="margin:20px;width:80%;"
+               label-width="100px"
+               :model="dialog.user_info"
+               :rules="dialog.user_info_rules"
+               ref='user_info'>
+        <el-form-item class='edit-form'
+                      label="类型"
+                      prop='type'>
+          <!-- select,下拉框 -->
+          <el-select
+            v-model="forbid.type"
+            :multiple='false'
+            :placeholder="">
+            <el-option
+              v-for="data in selectData"
+              :value="data.value"
+              :label="data.text"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item class='edit-form'
+                      label="邮箱"
+                      prop='email'>
+          <el-input v-model="dialog.user_info.email" placeholder='常用邮箱'></el-input>
+        </el-form-item>
+        <el-form-item class='edit-form'
+                      label="用户名称"
+                      prop='username'>
+          <el-input v-model="dialog.user_info.username" disabled placeholder='用户名'></el-input>
+        </el-form-item>
+        <el-form-item class='edit-form'
+                      label="当前密码"
+                      prop='old_password'>
+          <el-input
+            type='password'
+            placeholder='当前密码'
+            auto-complete='off'
+            v-model="dialog.user_info.old_password"></el-input>
+        </el-form-item>
+        <el-form-item class='edit-form'
+                      label="新密码"
+                      prop='password'>
+          <el-input
+            type='password'
+            placeholder='新密码'
+            auto-complete='off'
+            v-model="dialog.user_info.password"></el-input>
+        </el-form-item>
+        <el-form-item class='edit-form'
+                      label="确认密码"
+                      prop='password_confirm'>
+          <el-input
+            type='password'
+            placeholder='确认密码'
+            auto-complete='off'
+            v-model="dialog.user_info.password_confirm"></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+                <el-button @click="dialog.show_pass = false">取 消</el-button>
+                <el-button type="primary" @click="updUserPass('user_info')">确 定</el-button>
+            </span>
+    </el-dialog>
+    <!--end新增模态框-->
+
     <el-table :data="tableData" border fit style="width: 100%" align='center'>
       <el-table-column
         :prop="fields.name.info.prop"
@@ -90,6 +159,8 @@
 
 
 
+
+
               </el-tag>
             </div>
           </el-popover>
@@ -123,6 +194,66 @@
     name: 'list',
     data() {
       return {
+        forbid: {
+          type: '',
+          name: '',
+          star: '',
+          feature: '',
+          harm: '',
+          defense: ''
+        },
+        selectData:{
+            placeholder:'请选择',
+            multiple:false,
+            data:[
+              {value:'radiation',text:'辐射禁忌'}
+            ]
+        },
+        dialog: {
+          show_pass: false,
+          title: '添加孕期禁忌项',
+          user_info: this.$store.state.user.userinfo,
+          user_info_rules: {
+            old_password: [{
+              required: true,
+              message: '旧密码不能为空！',
+              trigger: 'blur'
+            }],
+            password: [{
+              required: true,
+              message: '新密码不能为空！',
+              trigger: 'blur'
+            }, {
+              trigger: 'blur',
+              validator: (rule, value, callback) => {
+                if (value === '') {
+                  callback(new Error('请再次输入密码'));
+                } else {
+                  if ('' !== this.dialog.user_info.password) {
+                    this.$refs.user_info.validateField('password_confirm');
+                  }
+                  callback();
+                }
+              }
+            }],
+            password_confirm: [{
+              required: true,
+              message: '确认密码不能为空！',
+              trigger: 'blur'
+            }, {
+              trigger: 'blur',
+              validator: (rule, value, callback) => {
+                if (value === '') {
+                  callback(new Error('请再次输入密码'));
+                } else if (value !== this.dialog.user_info.password) {
+                  callback(new Error('两次输入密码不一致!'));
+                } else {
+                  callback();
+                }
+              }
+            }],
+          }
+        },
         pageSizes: [5, 10, 20, 50, 100],
         pageSize: 5,
         total: 20,
@@ -405,6 +536,10 @@
       },
       onSelectData() {
 
+      },
+      setDialogInfo() {
+        this.dialog.show_pass = true;
+        this.dialog.title = '添加禁忌项';
       },
       handleSizeChange(val) {
         console.log(`每页 ${val} 条`);
