@@ -132,12 +132,17 @@
                :rules="dialog.user_info_rules"
                ref='user_info'>
         <el-form-item class='edit-form'
-                      label="类型"
+                      label="辐射源"
+                      prop='name'>
+          <el-input v-model="forbid.name" placeholder='辐射源'></el-input>
+        </el-form-item>
+        <el-form-item class='edit-form'
+                      label="辐射指数"
                       prop='type'>
           <!-- select,下拉框 -->
           <el-select v-model="forbid.type" placeholder="请选择">
             <el-option
-              v-for="item in selectItem"
+              v-for="item in starItem"
               :key="item.value"
               :label="item.label"
               :value="item.value">
@@ -145,41 +150,32 @@
           </el-select>
         </el-form-item>
         <el-form-item class='edit-form'
-                      label="邮箱"
-                      prop='email'>
-          <el-input v-model="dialog.user_info.email" placeholder='常用邮箱'></el-input>
+                      label="辐射源特征"
+                      prop='feature'>
+          <el-input type="textarea" v-model="forbid.feature" placeholder='辐射源特征'></el-input>
         </el-form-item>
         <el-form-item class='edit-form'
-                      label="用户名称"
-                      prop='username'>
-          <el-input v-model="dialog.user_info.username" disabled placeholder='用户名'></el-input>
+                      label="损害"
+                      prop='harm'>
+          <el-input type="textarea" v-model="forbid.harm" placeholder='损害概要'></el-input>
         </el-form-item>
         <el-form-item class='edit-form'
-                      label="当前密码"
-                      prop='old_password'>
+                      label="具体损伤"
+                      prop='harmDetail'>
           <el-input
-            type='password'
-            placeholder='当前密码'
+            type="textarea"
+            placeholder='具体损伤'
             auto-complete='off'
-            v-model="dialog.user_info.old_password"></el-input>
+            v-model="forbid.harmDetail"></el-input>
         </el-form-item>
         <el-form-item class='edit-form'
-                      label="新密码"
-                      prop='password'>
+                      label="如何防范"
+                      prop='defense'>
           <el-input
-            type='password'
-            placeholder='新密码'
+            type="textarea"
+            placeholder='如何防范'
             auto-complete='off'
-            v-model="dialog.user_info.password"></el-input>
-        </el-form-item>
-        <el-form-item class='edit-form'
-                      label="确认密码"
-                      prop='password_confirm'>
-          <el-input
-            type='password'
-            placeholder='确认密码'
-            auto-complete='off'
-            v-model="dialog.user_info.password_confirm"></el-input>
+            v-model="forbid.defense"></el-input>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -196,39 +192,21 @@
     name: 'list',
     data() {
       return {
-        selectItem: [{
-          value: 'conflict',
-          label: '食物相克'
+        starItem: [{
+          value: '1',
+          label: '★'
         }, {
-          value: 'radiation',
-          label: '辐射禁忌'
+          value: '2',
+          label: '★★'
         }, {
-          value: 'diet',
-          label: '饮食禁忌'
+          value: '3',
+          label: '★★★'
         }, {
-          value: 'fruit',
-          label: '水果禁忌'
+          value: '4',
+          label: '★★★★'
         }, {
-          value: 'life',
-          label: '生活禁忌'
-        }, {
-          value: 'medicine',
-          label: '用药禁忌'
-        }, {
-          value: 'clothing',
-          label: '衣着禁忌'
-        }, {
-          value: 'sexual',
-          label: '性生活禁忌'
-        }, {
-          value: 'sport',
-          label: '运动禁忌'
-        }, {
-          value: 'lyingin',
-          label: '月子禁忌'
-        }, {
-          value: 'work',
-          label: '上班禁忌'
+          value: '5',
+          label: '★★★★★'
         }],
         forbid: {
           type: '',
@@ -236,6 +214,7 @@
           star: '',
           feature: '',
           harm: '',
+          harmDetail: '',
           defense: ''
         },
         dialog: {
