@@ -132,15 +132,28 @@
                :rules="dialog.user_info_rules"
                ref='user_info'>
         <el-form-item class='edit-form'
-                      label="辐射源"
+                      label="禁忌源名称"
                       prop='name'>
-          <el-input v-model="forbid.name" placeholder='辐射源'></el-input>
+          <el-input v-model="forbid.name" placeholder='禁忌源名称'></el-input>
         </el-form-item>
         <el-form-item class='edit-form'
-                      label="辐射指数"
+                      label="类型"
                       prop='type'>
           <!-- select,下拉框 -->
           <el-select v-model="forbid.type" placeholder="请选择">
+            <el-option
+              v-for="item in typeItem"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item class='edit-form'
+                      label="伤害指数"
+                      prop='star'>
+          <!-- select,下拉框 -->
+          <el-select v-model="forbid.star" placeholder="请选择">
             <el-option
               v-for="item in starItem"
               :key="item.value"
@@ -150,9 +163,9 @@
           </el-select>
         </el-form-item>
         <el-form-item class='edit-form'
-                      label="辐射源特征"
+                      label="禁忌源特征"
                       prop='feature'>
-          <el-input type="textarea" v-model="forbid.feature" placeholder='辐射源特征'></el-input>
+          <el-input type="textarea" v-model="forbid.feature" placeholder='禁忌源特征'></el-input>
         </el-form-item>
         <el-form-item class='edit-form'
                       label="损害"
@@ -180,7 +193,7 @@
       </el-form>
       <span slot="footer" class="dialog-footer">
                 <el-button @click="dialog.show_pass = false">取 消</el-button>
-                <el-button type="primary" @click="updUserPass('user_info')">确 定</el-button>
+                <el-button type="primary" @click="saveForbid">确 定</el-button>
             </span>
     </el-dialog>
     <!--end新增模态框-->
@@ -192,6 +205,40 @@
     name: 'list',
     data() {
       return {
+        typeItem: [{
+          value: 'conflict',
+          label: '食物相克'
+        }, {
+          value: 'radiation',
+          label: '辐射禁忌'
+        }, {
+          value: 'diet',
+          label: '饮食禁忌'
+        }, {
+          value: 'fruit',
+          label: '水果禁忌'
+        }, {
+          value: 'life',
+          label: '生活禁忌'
+        }, {
+          value: 'medicine',
+          label: '用药禁忌'
+        }, {
+          value: 'clothing',
+          label: '衣着禁忌'
+        }, {
+          value: 'sexual',
+          label: '性生活禁忌'
+        }, {
+          value: 'sport',
+          label: '运动禁忌'
+        }, {
+          value: 'lyingin',
+          label: '月子禁忌'
+        }, {
+          value: 'work',
+          label: '上班禁忌'
+        }],
         starItem: [{
           value: '1',
           label: '★'
@@ -209,8 +256,8 @@
           label: '★★★★★'
         }],
         forbid: {
-          type: '',
           name: '',
+          type: '',
           star: '',
           feature: '',
           harm: '',
@@ -554,6 +601,10 @@
       },
       handleCurrentChange(val) {
         console.log(`当前页: ${val}`);
+      },
+      saveForbid(){
+          alert(JSON.stringify(this.forbid))
+//        http://localhost:22222/api/v1/forbid/save
       }
     }
   }
