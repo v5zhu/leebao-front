@@ -13,73 +13,6 @@
       </el-form-item>
     </el-form>
 
-    <!--start新增模态框-->
-    <el-dialog size="small" :title="dialog.title"
-               v-model="dialog.show_pass">
-      <el-form style="margin:20px;width:80%;"
-               label-width="100px"
-               :model="dialog.user_info"
-               :rules="dialog.user_info_rules"
-               ref='user_info'>
-        <el-form-item class='edit-form'
-                      label="类型"
-                      prop='type'>
-          <!-- select,下拉框 -->
-          <el-select
-            v-model="forbid.type"
-            :multiple='false'
-            :placeholder="">
-            <el-option
-              v-for="data in selectData"
-              :value="data.value"
-              :label="data.text"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item class='edit-form'
-                      label="邮箱"
-                      prop='email'>
-          <el-input v-model="dialog.user_info.email" placeholder='常用邮箱'></el-input>
-        </el-form-item>
-        <el-form-item class='edit-form'
-                      label="用户名称"
-                      prop='username'>
-          <el-input v-model="dialog.user_info.username" disabled placeholder='用户名'></el-input>
-        </el-form-item>
-        <el-form-item class='edit-form'
-                      label="当前密码"
-                      prop='old_password'>
-          <el-input
-            type='password'
-            placeholder='当前密码'
-            auto-complete='off'
-            v-model="dialog.user_info.old_password"></el-input>
-        </el-form-item>
-        <el-form-item class='edit-form'
-                      label="新密码"
-                      prop='password'>
-          <el-input
-            type='password'
-            placeholder='新密码'
-            auto-complete='off'
-            v-model="dialog.user_info.password"></el-input>
-        </el-form-item>
-        <el-form-item class='edit-form'
-                      label="确认密码"
-                      prop='password_confirm'>
-          <el-input
-            type='password'
-            placeholder='确认密码'
-            auto-complete='off'
-            v-model="dialog.user_info.password_confirm"></el-input>
-        </el-form-item>
-      </el-form>
-      <span slot="footer" class="dialog-footer">
-                <el-button @click="dialog.show_pass = false">取 消</el-button>
-                <el-button type="primary" @click="updUserPass('user_info')">确 定</el-button>
-            </span>
-    </el-dialog>
-    <!--end新增模态框-->
-
     <el-table :data="tableData" border fit style="width: 100%" align='center'>
       <el-table-column
         :prop="fields.name.info.prop"
@@ -161,6 +94,9 @@
 
 
 
+
+
+
               </el-tag>
             </div>
           </el-popover>
@@ -186,6 +122,72 @@
       <li>缩短使用电器的时间</li>
       <li>有条件的孕妈咪可使用产品质量合格,有相关检测证明的防辐射服装、电视防辐射屏、防辐射窗帘等</li>
     </ul>
+
+    <!--start新增模态框-->
+    <el-dialog size="small" :title="dialog.title"
+               v-model="dialog.show_pass">
+      <el-form style="margin:20px;width:80%;"
+               label-width="100px"
+               :model="dialog.user_info"
+               :rules="dialog.user_info_rules"
+               ref='user_info'>
+        <el-form-item class='edit-form'
+                      label="类型"
+                      prop='type'>
+          <!-- select,下拉框 -->
+          <el-select v-model="forbid.type" placeholder="请选择">
+            <el-option
+              v-for="item in selectItem"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item class='edit-form'
+                      label="邮箱"
+                      prop='email'>
+          <el-input v-model="dialog.user_info.email" placeholder='常用邮箱'></el-input>
+        </el-form-item>
+        <el-form-item class='edit-form'
+                      label="用户名称"
+                      prop='username'>
+          <el-input v-model="dialog.user_info.username" disabled placeholder='用户名'></el-input>
+        </el-form-item>
+        <el-form-item class='edit-form'
+                      label="当前密码"
+                      prop='old_password'>
+          <el-input
+            type='password'
+            placeholder='当前密码'
+            auto-complete='off'
+            v-model="dialog.user_info.old_password"></el-input>
+        </el-form-item>
+        <el-form-item class='edit-form'
+                      label="新密码"
+                      prop='password'>
+          <el-input
+            type='password'
+            placeholder='新密码'
+            auto-complete='off'
+            v-model="dialog.user_info.password"></el-input>
+        </el-form-item>
+        <el-form-item class='edit-form'
+                      label="确认密码"
+                      prop='password_confirm'>
+          <el-input
+            type='password'
+            placeholder='确认密码'
+            auto-complete='off'
+            v-model="dialog.user_info.password_confirm"></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+                <el-button @click="dialog.show_pass = false">取 消</el-button>
+                <el-button type="primary" @click="updUserPass('user_info')">确 定</el-button>
+            </span>
+    </el-dialog>
+    <!--end新增模态框-->
   </div>
 </template>
 
@@ -194,6 +196,40 @@
     name: 'list',
     data() {
       return {
+        selectItem: [{
+          value: 'conflict',
+          label: '食物相克'
+        }, {
+          value: 'radiation',
+          label: '辐射禁忌'
+        }, {
+          value: 'diet',
+          label: '饮食禁忌'
+        }, {
+          value: 'fruit',
+          label: '水果禁忌'
+        }, {
+          value: 'life',
+          label: '生活禁忌'
+        }, {
+          value: 'medicine',
+          label: '用药禁忌'
+        }, {
+          value: 'clothing',
+          label: '衣着禁忌'
+        }, {
+          value: 'sexual',
+          label: '性生活禁忌'
+        }, {
+          value: 'sport',
+          label: '运动禁忌'
+        }, {
+          value: 'lyingin',
+          label: '月子禁忌'
+        }, {
+          value: 'work',
+          label: '上班禁忌'
+        }],
         forbid: {
           type: '',
           name: '',
@@ -201,13 +237,6 @@
           feature: '',
           harm: '',
           defense: ''
-        },
-        selectData:{
-            placeholder:'请选择',
-            multiple:false,
-            data:[
-              {value:'radiation',text:'辐射禁忌'}
-            ]
         },
         dialog: {
           show_pass: false,
