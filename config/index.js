@@ -2,46 +2,46 @@
 var path = require('path');
 
 module.exports = {
-    build: {
-        env: require('./prod.env'),
-        index: path.resolve(__dirname, '../dist/index.html'),
-        assetsRoot: path.resolve(__dirname, '../dist'),
-        assetsSubDirectory: 'static',
-        assetsPublicPath: './',
-        productionSourceMap: true,
-        // Gzip off by default as many popular static hosts such as
-        // Surge or Netlify already gzip all static assets for you.
-        // Before setting to `true`, make sure to:
-        // npm install --save-dev compression-webpack-plugin
-        productionGzip: false,
-        productionGzipExtensions: ['js', 'css']
+  build: {
+    env: require('./prod.env'),
+    index: path.resolve(__dirname, '../dist/index.html'),
+    assetsRoot: path.resolve(__dirname, '../dist'),
+    assetsSubDirectory: 'static',
+    assetsPublicPath: './',
+    productionSourceMap: true,
+    // Gzip off by default as many popular static hosts such as
+    // Surge or Netlify already gzip all static assets for you.
+    // Before setting to `true`, make sure to:
+    // npm install --save-dev compression-webpack-plugin
+    productionGzip: false,
+    productionGzipExtensions: ['js', 'css']
+  },
+  dev: {
+    env: require('./dev.env'),
+    port: 8080,
+    assetsSubDirectory: 'static',
+    assetsPublicPath: '/',
+    proxyTable: {
+      '/slsAdminQiniu': {
+        target: '//up-z2.qiniu.com',
+        changeOrigin: true,
+        pathRewrite: {
+          '^/slsAdminQiniu': ''
+        }
+      },
+      '/api/v1': {
+        target: 'http://120.77.172.143:22222',
+        changeOrigin: true,
+        pathRewrite: {
+          '^/api/v1': '/api/v1'
+        }
+      }
     },
-    dev: {
-        env: require('./dev.env'),
-        port: 8080,
-        assetsSubDirectory: 'static',
-        assetsPublicPath: '/',
-        proxyTable: {
-            '/slsAdminApi': {
-                target: 'http://slsadmin.api.sailengsi.com',
-                changeOrigin: true,
-                pathRewrite: {
-                    '^/slsAdminApi': ''
-                }
-            },
-	        '/slsAdminQiniu': {
-		        target: '//up-z2.qiniu.com',
-		        changeOrigin: true,
-		        pathRewrite: {
-			        '^/slsAdminQiniu': ''
-		        }
-	        }
-        },
-        // CSS Sourcemaps off by default because relative paths are "buggy"
-        // with this option, according to the CSS-Loader README
-        // (https://github.com/webpack/css-loader#sourcemaps)
-        // In our experience, they generally work as expected,
-        // just be aware of this issue when enabling this option.
-        cssSourceMap: false
-    }
+    // CSS Sourcemaps off by default because relative paths are "buggy"
+    // with this option, according to the CSS-Loader README
+    // (https://github.com/webpack/css-loader#sourcemaps)
+    // In our experience, they generally work as expected,
+    // just be aware of this issue when enabling this option.
+    cssSourceMap: false
+  }
 }

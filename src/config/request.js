@@ -27,6 +27,10 @@ var request=[{
 	module:'open',
 	name:'第三方接入',
 	list:require('./request/open.js')
+},{
+	module:'area',
+	name:'区域接口',
+	list:require('./request/area.js')
 }];
 
 module.exports=request;

@@ -97,6 +97,8 @@
 
 
 
+
+
               </el-tag>
             </div>
           </el-popover>
@@ -603,7 +605,9 @@
         console.log(`当前页: ${val}`);
       },
       saveForbid(){
-          alert(JSON.stringify(this.forbid))
+        this.$$api_area_provinceList({}, (data) => {
+          console.dir(JSON.stringify(data));
+        });
 //        http://localhost:22222/api/v1/forbid/save
       }
     }

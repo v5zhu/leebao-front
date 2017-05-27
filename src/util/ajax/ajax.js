@@ -68,9 +68,8 @@ module.exports = function (type, url, data, fn, {
 
 		//发送请求
 		Vue.axios(options).then((res) => {
-			if (res.data.status === 200) {
-				// console.dir(res.data);
-				fn(res.data.data);
+			if (res.data.code === 200000) {
+				fn(res.data);
 			} else {
 
 				if (cbFn) {
