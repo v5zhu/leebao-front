@@ -1,15 +1,16 @@
+<!--suppress ALL -->
 <template>
   <div class="list">
-    <el-form :inline="true" :model='selectData' class="demo-form-inline">
+    <el-form :inline="true"  class="demo-form-inline">
       <el-form-item>
-        <el-input placeholder="辐射源" v-model='selectData.name'></el-input>
+        <el-input placeholder="辐射源" ></el-input>
       </el-form-item>
       <el-form-item>
-        <el-input placeholder="指数" v-model='selectData.star'></el-input>
+        <el-input placeholder="指数" ></el-input>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click='onSelectData'>查询</el-button>
-        <el-button type="primary" @click='setDialogInfo'>添加新的孕期禁忌项</el-button>
+        <el-button type="primary" >查询</el-button>
+        <el-button type="primary" @click='openDialog'>添加新的孕期禁忌项</el-button>
       </el-form-item>
     </el-form>
 
@@ -99,6 +100,7 @@
 
 
 
+
               </el-tag>
             </div>
           </el-popover>
@@ -126,8 +128,9 @@
     </ul>
 
     <!--start新增模态框-->
-    <el-dialog size="small" :title="dialog.title"
-               v-model="dialog.show_pass">
+    <el-dialog size="small"
+               :title="dialog.title"
+               v-model="dialog.visible">
       <el-form style="margin:20px;width:80%;"
                label-width="100px"
                :model="dialog.user_info"
@@ -144,10 +147,10 @@
           <!-- select,下拉框 -->
           <el-select v-model="forbid.type" placeholder="请选择">
             <el-option
-              v-for="item in typeItem"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value">
+              v-for="item in typeItems"
+              :key="item.type"
+              :label="item.name"
+              :value="item.type">
             </el-option>
           </el-select>
         </el-form-item>
@@ -157,10 +160,10 @@
           <!-- select,下拉框 -->
           <el-select v-model="forbid.star" placeholder="请选择">
             <el-option
-              v-for="item in starItem"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value">
+              v-for="item in starItems"
+              :key="item.star"
+              :label="item.name"
+              :value="item.star">
             </el-option>
           </el-select>
         </el-form-item>
@@ -194,7 +197,7 @@
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
-                <el-button @click="dialog.show_pass = false">取 消</el-button>
+                <el-button @click="dialog.visible = false">取 消</el-button>
                 <el-button type="primary" @click="saveForbid">确 定</el-button>
             </span>
     </el-dialog>
@@ -207,56 +210,9 @@
     name: 'list',
     data() {
       return {
-        typeItem: [{
-          value: 'conflict',
-          label: '食物相克'
-        }, {
-          value: 'radiation',
-          label: '辐射禁忌'
-        }, {
-          value: 'diet',
-          label: '饮食禁忌'
-        }, {
-          value: 'fruit',
-          label: '水果禁忌'
-        }, {
-          value: 'life',
-          label: '生活禁忌'
-        }, {
-          value: 'medicine',
-          label: '用药禁忌'
-        }, {
-          value: 'clothing',
-          label: '衣着禁忌'
-        }, {
-          value: 'sexual',
-          label: '性生活禁忌'
-        }, {
-          value: 'sport',
-          label: '运动禁忌'
-        }, {
-          value: 'lyingin',
-          label: '月子禁忌'
-        }, {
-          value: 'work',
-          label: '上班禁忌'
-        }],
-        starItem: [{
-          value: '1',
-          label: '★'
-        }, {
-          value: '2',
-          label: '★★'
-        }, {
-          value: '3',
-          label: '★★★'
-        }, {
-          value: '4',
-          label: '★★★★'
-        }, {
-          value: '5',
-          label: '★★★★★'
-        }],
+        tableData: [],
+        typeItems: [],
+        starItems: [],
         forbid: {
           name: '',
           type: '',
@@ -267,204 +223,13 @@
           defense: ''
         },
         dialog: {
-          show_pass: false,
-          title: '添加孕期禁忌项',
-          user_info: this.$store.state.user.userinfo,
-          user_info_rules: {
-            old_password: [{
-              required: true,
-              message: '旧密码不能为空！',
-              trigger: 'blur'
-            }],
-            password: [{
-              required: true,
-              message: '新密码不能为空！',
-              trigger: 'blur'
-            }, {
-              trigger: 'blur',
-              validator: (rule, value, callback) => {
-                if (value === '') {
-                  callback(new Error('请再次输入密码'));
-                } else {
-                  if ('' !== this.dialog.user_info.password) {
-                    this.$refs.user_info.validateField('password_confirm');
-                  }
-                  callback();
-                }
-              }
-            }],
-            password_confirm: [{
-              required: true,
-              message: '确认密码不能为空！',
-              trigger: 'blur'
-            }, {
-              trigger: 'blur',
-              validator: (rule, value, callback) => {
-                if (value === '') {
-                  callback(new Error('请再次输入密码'));
-                } else if (value !== this.dialog.user_info.password) {
-                  callback(new Error('两次输入密码不一致!'));
-                } else {
-                  callback();
-                }
-              }
-            }],
-          }
+          visible:false,
+          title: '添加孕期禁忌项'
         },
         pageSizes: [5, 10, 20, 50, 100],
         pageSize: 5,
         total: 20,
         currentPage4: 4,
-        tableData: [{
-          name: 'X线',
-          star: '5',
-          feature: '波长短穿透性强,可能产生反射反应',
-          harm: {
-            key: '器官细胞变异、畸形',
-            detail: '怀孕前3个月胎儿处于器官形成关键期,X光可能导致细胞组织突变从而流产或先天畸形'
-          },
-          defense: '医院X光照射腹部遮盖,尽量避免此类检查',
-          date: '2017-05-20',
-          author: {
-            nickname: 'vvboot',
-            name: '朱晓龙',
-            'weixin': 'deeplover_baby',
-            'qq': '2810010108'
-          }
-        }, {
-          name: '电热毯',
-          star: '5',
-          feature: '通电后产生电磁场,产生电磁辐射',
-          harm: {
-            key: '细胞分裂异常、大脑、神经、骨骼、心脏',
-            detail: '容易导致胎儿细胞分裂,发生异常改变,骨骼对电磁辐射最为敏感,影响胎儿大脑、神经、骨骼和心脏'
-          },
-          defense: '禁止使用电热毯',
-          date: '2017-05-20',
-          author: {
-            nickname: 'vvboot',
-            name: '朱晓龙',
-            'weixin': 'deeplover_baby',
-            'qq': '2810010108'
-          }
-        }, {
-          name: '电吹风',
-          star: '4',
-          feature: '开启和关闭时辐射最大,功率越大辐射越大',
-          harm: {
-            key: '孕妈咪损伤',
-            detail: '头晕、疲乏无力、记忆力减退、食欲减退、失眠、健忘等亚健康状态'
-          },
-          defense: '尽量不要用,使用干发毛巾或干毛帽代替',
-          date: '2017-05-20',
-          author: {
-            nickname: 'vvboot',
-            name: '朱晓龙',
-            'weixin': 'deeplover_baby',
-            'qq': '2810010108'
-          }
-        }, {
-          name: '微波炉',
-          star: '4',
-          feature: '微波炉辐射小于12伏米才符合国家标准,使用请遵循说明书',
-          harm: {
-            key: '',
-            detail: ''
-          },
-          defense: '不要放卧室,人不要站旁边,不用时拔掉电源,停止运行时再过去处理食品,准妈妈勿用微波炉',
-          date: '2017-05-20',
-          author: {
-            nickname: 'vvboot',
-            name: '朱晓龙',
-            'weixin': 'deeplover_baby',
-            'qq': '2810010108'
-          }
-        }, {
-          name: '电脑',
-          star: '3',
-          feature: '开机时周边存在电磁辐射,包括X射线、紫外线、可见光、红外线和特高频、高频、中频及极低频电磁场;背面辐射最强,两侧其次,正面最弱',
-          harm: {
-            key: '影响胚胎发育、听力残疾',
-            detail: '在细胞膜水平上干扰细胞的代谢和增殖,从而影响胚胎的发育,其次电脑辐射是导致宝宝听力残疾的头号危险因素'
-          },
-          defense: '保持安全距离,穿防辐射服,控制时间',
-          date: '2017-05-20',
-          author: {
-            nickname: 'vvboot',
-            name: '朱晓龙',
-            'weixin': 'deeplover_baby',
-            'qq': '2810010108'
-          }
-        }, {
-          name: '手机',
-          star: '2',
-          feature: '工作状态时向基站传送无线电波,通话接通时比通话中辐射高20倍,信号不好电量低时,辐射更高',
-          harm: {
-            key: '改变人体组织',
-            detail: '或多或少被人体吸收,从而改变人体组织'
-          },
-          defense: '专用耳机、麦克风接听电话,减少通话时间,电话未接通时避免靠近耳部',
-          date: '2017-05-20',
-          author: {
-            nickname: 'vvboot',
-            name: '朱晓龙',
-            'weixin': 'deeplover_baby',
-            'qq': '2810010108'
-          }
-        }, {
-          name: '电视机',
-          star: '2',
-          feature: '传统电视电子束打在荧光粉上的瞬间会产生电磁辐射,产生X射线,液晶电视相对辐射小很多',
-          harm: {
-            key: '',
-            detail: ''
-          },
-          defense: '保持2米以上距离,连续不能超过2小时,看完电视洗脸',
-          date: '2017-05-20',
-          author: {
-            nickname: 'vvboot',
-            name: '朱晓龙',
-            'weixin': 'deeplover_baby',
-            'qq': '2810010108'
-          }
-        }, {
-          name: '复印机/打印机',
-          star: '1',
-          feature: '有电流就有电磁波即存在辐射,打印机的电子线圈和风扇部位辐射最大',
-          harm: {
-            key: '',
-            detail: ''
-          },
-          defense: '办公一族保持30厘米以上或穿防辐射服',
-          date: '2017-05-20',
-          author: {
-            nickname: 'vvboot',
-            name: '朱晓龙',
-            'weixin': 'deeplover_baby',
-            'qq': '2810010108'
-          }
-        }, {
-          name: '安检',
-          star: '1',
-          feature: '主要通过电磁场的辐射对金属物探测,电磁辐射小',
-          harm: {
-            key: '',
-            detail: ''
-          },
-          defense: '不超过6分钟,减少乘飞机,准妈妈尽快通过安检',
-          date: '2017-05-20',
-          author: {
-            nickname: 'vvboot',
-            name: '朱晓龙',
-            'weixin': 'deeplover_baby',
-            'qq': '2810010108'
-          }
-        }],
-        selectData: {
-          name: '',
-          star: '',
-          date: ''
-        },
         fields: {
           name: {
             info: {
@@ -485,22 +250,7 @@
               sortable: true
             },
             filter: {
-              list: [{
-                text: '★',
-                value: 1
-              }, {
-                text: '★★',
-                value: 2
-              }, {
-                text: '★★★',
-                value: 3
-              }, {
-                text: '★★★★',
-                value: 4
-              }, {
-                text: '★★★★★',
-                value: 5
-              }],
+              list: this.starItem,
               multiple: false
             },
             style: {
@@ -591,12 +341,11 @@
       filterStar(value, item) {
         return item.star == value;
       },
-      onSelectData() {
-
-      },
-      setDialogInfo() {
-        this.dialog.show_pass = true;
+      openDialog() {
+        this.dialog.visible = true;
         this.dialog.title = '添加禁忌项';
+        this.typeDropdown();
+        this.starDropdown();
       },
       handleSizeChange(val) {
         console.log(`每页 ${val} 条`);
@@ -605,10 +354,19 @@
         console.log(`当前页: ${val}`);
       },
       saveForbid(){
-        this.$$api_area_provinceList({}, (data) => {
-          console.dir(JSON.stringify(data));
+        this.$$api_forbid_saveForbid(this.forbid, (data) => {
+        this.dialog.visible=false;
         });
-//        http://localhost:22222/api/v1/forbid/save
+      },
+      typeDropdown(){
+        this.$$api_forbid_typeList({}, (data) => {
+          this.typeItems=data.obj;
+        });
+      },
+      starDropdown(){
+        this.$$api_star_starList({}, (data) => {
+          this.starItems=data.obj;
+        });
       }
     }
   }
