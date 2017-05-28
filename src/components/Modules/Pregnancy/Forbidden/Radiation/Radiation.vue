@@ -29,9 +29,8 @@
         :label="fields.type.info.label"
         :align="fields.type.style.align"
         :width="fields.type.style.width"
-        :formatter="formatterStar"
         :filters="fields.type.filter.list"
-        :filter-method="filterStar"
+        :filter-method="filterType"
         :filter-multiple="fields.type.filter.multiple">
       </el-table-column>
       <el-table-column
@@ -40,7 +39,6 @@
         :label="fields.star.info.label"
         :align="fields.star.style.align"
         :width="fields.star.style.width"
-        :formatter="formatterStar"
         :filters="fields.star.filter.list"
         :filter-method="filterStar"
         :filter-multiple="fields.star.filter.multiple">
@@ -83,15 +81,8 @@
         :sortable="fields.date.info.sortable">
         <template scope="scope">
           <el-icon name="time"></el-icon>
-          <span style="margin-left: 10px">{{ scope.row.date }}</span>
+          <span style="margin-left: 10px">{{ scope.row.createTime|formatDate1}}</span>
         </template>
-      </el-table-column>
-
-      <el-table-column
-        :label="fields.author.info.label"
-        :align="fields.author.style.align"
-        :width="fields.author.style.width"
-        :sortable="fields.author.info.sortable">
       </el-table-column>
     </el-table>
     <template>
@@ -135,9 +126,9 @@
           <el-select v-model="forbid.type" placeholder="请选择">
             <el-option
               v-for="item in typeItems"
-              :key="item.type"
-              :label="item.name"
-              :value="item.type">
+              :key="item.value"
+              :label="item.text"
+              :value="item.value">
             </el-option>
           </el-select>
         </el-form-item>
@@ -148,9 +139,9 @@
           <el-select v-model="forbid.star" placeholder="请选择">
             <el-option
               v-for="item in starItems"
-              :key="item.star"
-              :label="item.name"
-              :value="item.star">
+              :key="item.value"
+              :label="item.text"
+              :value="item.value">
             </el-option>
           </el-select>
         </el-form-item>
@@ -193,6 +184,7 @@
 </template>
 
 <script>
+  import {formatDate} from 'config/filters/format.js';
   module.exports = {
     name: 'list',
     data() {
@@ -234,19 +226,19 @@
             },
             filter: {},
             style: {
-              width: '130',
+              width: '110',
               align: 'center'
             }
           },
           type: {
             info: {
-              prop: 'type',
+              prop: 'typeName',
               label: '禁忌类型',
               sortable: true
             }
             ,
             filter: {
-              list: this.typeItems,
+              list: [],
               multiple: false
             }
             ,
@@ -257,13 +249,13 @@
           },
           star: {
             info: {
-              prop: 'star',
+              prop: 'starName',
               label: '危害指数',
               sortable: true
             }
             ,
             filter: {
-              list: this.starItems,
+              list: [],
               multiple: false
             },
             style: {
@@ -333,98 +325,119 @@
           },
           date: {
             info: {
-              prop: 'date',
+              prop: 'createTime',
               label: '日期',
               sortable: true
             },
             filter: {},
             style: {
-              width: '180',
+              width: '200',
               align: 'center'
             }
           }
         }
       }
     },
+    created(){
+      this.pageList();
+      this.typeDropdown();
+      this.starDropdown();
+    },
+    filters:{
+      formatDate1(time) {
+        var date = new Date(time);
+        return formatDate(date, 'yyyy年MM月dd日');
+      }
+    },
     methods: {
-      /**
-       * 格式化辐射指数
-       */
-      formatterStar(item) {
-        if (item.star == 1) {
-          return '★';
-        } else if (item.star == 2) {
-          return '★★';
-        } else if (item.star == 3) {
-          return '★★★';
-        } else if (item.star == 4) {
-          return '★★★★';
-        } else if (item.star == 5) {
-          return '★★★★★';
-        }
+      filterType(type, item)
+      {
+        return item.type == type;
       },
-      filterStar(value, item) {
-        return item.star == value;
+      filterStar(star, item)
+      {
+          console.dir(star)
+          console.dir(item)
+        return item.star == star;
       },
-      openDialog(type) {
+      openDialog(type)
+      {
         if (type === 1) {
           this.dialog.visible = true;
           this.dialog.title = '添加禁忌项';
-          this.typeDropdown();
-          this.starDropdown();
         } else if (type === 2) {
           this.dialog.visible = true;
           this.dialog.title = '禁忌列表';
-          this.typeDropdown();
-          this.starDropdown();
           this.pageList();
         }
-      },
-      handleSizeChange(val) {
-        this.pageable.pageSize=val;
+      }
+      ,
+      handleSizeChange(val)
+      {
+        this.pageable.pageSize = val;
         this.pageList();
-      },
-      handleCurrentChange(val) {
-        this.pageable.pageNum=val;
+      }
+      ,
+      handleCurrentChange(val)
+      {
+        this.pageable.pageNum = val;
         this.pageList();
-      },
-      saveForbid(){
+      }
+      ,
+      saveForbid()
+      {
         this.$$api_forbid_saveForbid(this.forbid, (data) => {
           this.dialog.visible = false;
+          this.pageList();
         });
-      },
-      updateForbid(){
+      }
+      ,
+      updateForbid()
+      {
         this.$$api_forbid_updateForbid(this.forbid, (data) => {
           this.dialog.visible = false;
+          this.pageList();
         });
-      },
-      pageList(){
+      }
+      ,
+      pageList()
+      {
         this.$$api_forbid_pageList({pageNo: this.pageable.pageNum, pageSize: this.pageable.pageSize}, (data) => {
           this.pageable = data.obj;
           console.dir(data)
           this.dialog.visible = false;
         });
-      },
-      detail(){
+      }
+      ,
+      detail()
+      {
         this.$$api_forbid_detail({id: this.forbid.id}, (data) => {
           console.dir(data)
           this.dialog.visible = false;
         });
-      },
-      delete(){
+      }
+      ,
+      delete()
+      {
         this.$$api_forbid_delete({id: this.forbid.id}, (data) => {
           console.dir(data)
           this.dialog.visible = false;
         });
-      },
-      typeDropdown(){
+      }
+      ,
+      typeDropdown()
+      {
         this.$$api_forbid_typeList({}, (data) => {
           this.typeItems = data.obj;
+          this.fields.type.filter.list=this.typeItems;
         });
-      },
-      starDropdown(){
+      }
+      ,
+      starDropdown()
+      {
         this.$$api_star_starList({}, (data) => {
           this.starItems = data.obj;
+          this.fields.star.filter.list=this.starItems;
         });
       }
     }
