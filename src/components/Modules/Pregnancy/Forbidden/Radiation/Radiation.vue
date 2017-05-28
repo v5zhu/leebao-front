@@ -1,26 +1,38 @@
 <!--suppress ALL -->
 <template>
   <div class="list">
-    <el-form :inline="true"  class="demo-form-inline">
+    <el-form :inline="true" class="demo-form-inline">
       <el-form-item>
-        <el-input placeholder="辐射源" ></el-input>
+        <el-input placeholder="辐射源"></el-input>
       </el-form-item>
       <el-form-item>
-        <el-input placeholder="指数" ></el-input>
+        <el-input placeholder="指数"></el-input>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" >查询</el-button>
-        <el-button type="primary" @click='openDialog'>添加新的孕期禁忌项</el-button>
+        <el-button type="primary">查询</el-button>
+        <el-button type="primary" @click='openDialog(1)'>添加新的孕期禁忌项</el-button>
+        <el-button type="primary" @click='openDialog(2)'>查看列表</el-button>
       </el-form-item>
     </el-form>
 
-    <el-table :data="tableData" border fit style="width: 100%" align='center'>
+    <el-table :data="pageable.list" border fit style="width: 100%" align='center'>
       <el-table-column
         :prop="fields.name.info.prop"
         :label="fields.name.info.label"
         :align="fields.name.style.align"
         :width="fields.name.style.width"
         :sortable="fields.name.info.sortable">
+      </el-table-column>
+      <el-table-column
+        :prop="fields.type.info.prop"
+        :sortable="fields.type.info.sortable"
+        :label="fields.type.info.label"
+        :align="fields.type.style.align"
+        :width="fields.type.style.width"
+        :formatter="formatterStar"
+        :filters="fields.type.filter.list"
+        :filter-method="filterStar"
+        :filter-multiple="fields.type.filter.multiple">
       </el-table-column>
       <el-table-column
         :prop="fields.star.info.prop"
@@ -48,10 +60,10 @@
         :sortable="fields.harm.info.sortable">
         <template scope="scope">
           <el-popover trigger="hover" placement="top">
-            <p>核心词: {{ scope.row.harm.key }}</p>
-            <p>具体损伤: {{ scope.row.harm.detail }}</p>
+            <p>核心词: {{ scope.row.harm }}</p>
+            <p>具体损伤: {{ scope.row.harmDetail }}</p>
             <div slot="reference" class="name-wrapper" style="word-break: break-all">
-              <el-tag v-if="scope.row.harm.key!=''">{{ scope.row.harm.key }}</el-tag>
+              <el-tag v-if="scope.row.harm!=''">{{ scope.row.harm }}</el-tag>
             </div>
           </el-popover>
         </template>
@@ -80,31 +92,6 @@
         :align="fields.author.style.align"
         :width="fields.author.style.width"
         :sortable="fields.author.info.sortable">
-        <template scope="scope">
-          <el-popover trigger="hover" placement="top">
-            <p>姓名: {{ scope.row.author.name }}</p>
-            <p>微信: {{ scope.row.author.weixin }}</p>
-            <p>Q Q: {{ scope.row.author.qq }}</p>
-            <div slot="reference" class="name-wrapper">
-              <el-tag>
-                <span class="fa fa-at" style="color:yellowgreen"></span>
-                {{ scope.row.author.nickname }}
-
-
-
-
-
-
-
-
-
-
-
-
-              </el-tag>
-            </div>
-          </el-popover>
-        </template>
       </el-table-column>
     </el-table>
     <template>
@@ -112,11 +99,11 @@
         <el-pagination
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
-          :current-page="currentPage4"
+          :current-page="pageable.pageNum"
           :page-sizes="pageSizes"
-          :page-size="pageSize"
+          :page-size="pageable.pageSize"
           layout="total, sizes, prev, pager, next, jumper"
-          :total="total">
+          :total="pageable.total">
         </el-pagination>
       </div>
     </template>
@@ -214,6 +201,7 @@
         typeItems: [],
         starItems: [],
         forbid: {
+          id: '',
           name: '',
           type: '',
           star: '',
@@ -223,18 +211,25 @@
           defense: ''
         },
         dialog: {
-          visible:false,
+          visible: false,
           title: '添加孕期禁忌项'
         },
+        pageable: {
+          pageNum: 1,
+          pageSize: 5,
+          pages: 0,
+          size: 0,
+          total: 0,
+          hasNextPage: false,
+          hasPreviousPage: false,
+          list: []
+        },
         pageSizes: [5, 10, 20, 50, 100],
-        pageSize: 5,
-        total: 20,
-        currentPage4: 4,
         fields: {
           name: {
             info: {
               prop: 'name',
-              label: '辐射源',
+              label: '禁忌源',
               sortable: true
             },
             filter: {},
@@ -243,14 +238,32 @@
               align: 'center'
             }
           },
+          type: {
+            info: {
+              prop: 'type',
+              label: '禁忌类型',
+              sortable: true
+            }
+            ,
+            filter: {
+              list: this.typeItems,
+              multiple: false
+            }
+            ,
+            style: {
+              width: '150',
+              align: 'center'
+            }
+          },
           star: {
             info: {
               prop: 'star',
-              label: '辐射指数',
+              label: '危害指数',
               sortable: true
-            },
+            }
+            ,
             filter: {
-              list: this.starItem,
+              list: this.starItems,
               multiple: false
             },
             style: {
@@ -261,7 +274,7 @@
           feature: {
             info: {
               prop: 'feature',
-              label: '辐射源特征',
+              label: '禁忌源特征',
               sortable: true
             },
             filter: {},
@@ -273,8 +286,20 @@
           harm: {
             info: {
               prop: 'harm',
-              label: '辐射损害',
+              label: '危害',
               sortable: true
+            },
+            filter: {},
+            style: {
+              width: '250',
+              align: 'center'
+            }
+          },
+          harmDetail: {
+            info: {
+              prop: 'harmDetail',
+              label: '危害说明',
+              sortable: false
             },
             filter: {},
             style: {
@@ -296,7 +321,7 @@
           },
           author: {
             info: {
-              prop: 'author.nickname',
+              prop: 'createUser',
               label: '作者',
               sortable: true
             },
@@ -341,31 +366,65 @@
       filterStar(value, item) {
         return item.star == value;
       },
-      openDialog() {
-        this.dialog.visible = true;
-        this.dialog.title = '添加禁忌项';
-        this.typeDropdown();
-        this.starDropdown();
+      openDialog(type) {
+        if (type === 1) {
+          this.dialog.visible = true;
+          this.dialog.title = '添加禁忌项';
+          this.typeDropdown();
+          this.starDropdown();
+        } else if (type === 2) {
+          this.dialog.visible = true;
+          this.dialog.title = '禁忌列表';
+          this.typeDropdown();
+          this.starDropdown();
+          this.pageList();
+        }
       },
       handleSizeChange(val) {
-        console.log(`每页 ${val} 条`);
+        this.pageable.pageSize=val;
+        this.pageList();
       },
       handleCurrentChange(val) {
-        console.log(`当前页: ${val}`);
+        this.pageable.pageNum=val;
+        this.pageList();
       },
       saveForbid(){
         this.$$api_forbid_saveForbid(this.forbid, (data) => {
-        this.dialog.visible=false;
+          this.dialog.visible = false;
+        });
+      },
+      updateForbid(){
+        this.$$api_forbid_updateForbid(this.forbid, (data) => {
+          this.dialog.visible = false;
+        });
+      },
+      pageList(){
+        this.$$api_forbid_pageList({pageNo: this.pageable.pageNum, pageSize: this.pageable.pageSize}, (data) => {
+          this.pageable = data.obj;
+          console.dir(data)
+          this.dialog.visible = false;
+        });
+      },
+      detail(){
+        this.$$api_forbid_detail({id: this.forbid.id}, (data) => {
+          console.dir(data)
+          this.dialog.visible = false;
+        });
+      },
+      delete(){
+        this.$$api_forbid_delete({id: this.forbid.id}, (data) => {
+          console.dir(data)
+          this.dialog.visible = false;
         });
       },
       typeDropdown(){
         this.$$api_forbid_typeList({}, (data) => {
-          this.typeItems=data.obj;
+          this.typeItems = data.obj;
         });
       },
       starDropdown(){
         this.$$api_star_starList({}, (data) => {
-          this.starItems=data.obj;
+          this.starItems = data.obj;
         });
       }
     }
