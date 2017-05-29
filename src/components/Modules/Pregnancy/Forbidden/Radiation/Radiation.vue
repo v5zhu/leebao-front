@@ -15,7 +15,9 @@
       </el-form-item>
     </el-form>
 
-    <el-table :data="pageable.list" border fit style="width: 100%" align='center'>
+    <el-table :data="pageable.list" border fit style="width: 100%" align='center'
+              @filter-change="filterChange"
+              @sort-change="sortChange">
       <el-table-column
         :prop="fields.name.info.prop"
         :label="fields.name.info.label"
@@ -25,20 +27,24 @@
       </el-table-column>
       <el-table-column
         :prop="fields.type.info.prop"
+        :column-key="fields.type.info.prop"
         :sortable="fields.type.info.sortable"
         :label="fields.type.info.label"
         :align="fields.type.style.align"
         :width="fields.type.style.width"
+        :formatter="formatType"
         :filters="fields.type.filter.list"
         :filter-method="filterType"
         :filter-multiple="fields.type.filter.multiple">
       </el-table-column>
       <el-table-column
         :prop="fields.star.info.prop"
+        :column-key="fields.star.info.prop"
         :sortable="fields.star.info.sortable"
         :label="fields.star.info.label"
         :align="fields.star.style.align"
         :width="fields.star.style.width"
+        :formatter="formatStar"
         :filters="fields.star.filter.list"
         :filter-method="filterStar"
         :filter-multiple="fields.star.filter.multiple">
@@ -81,7 +87,7 @@
         :sortable="fields.date.info.sortable">
         <template scope="scope">
           <el-icon name="time"></el-icon>
-          <span style="margin-left: 10px">{{ scope.row.createTime|formatDate1}}</span>
+          <span style="margin-left: 10px">{{ scope.row.createTime | formatDate1}}</span>
         </template>
       </el-table-column>
     </el-table>
@@ -192,6 +198,8 @@
         tableData: [],
         typeItems: [],
         starItems: [],
+        sortsJson: [],
+        filtersJson: [],
         forbid: {
           id: '',
           name: '',
@@ -232,16 +240,14 @@
           },
           type: {
             info: {
-              prop: 'typeName',
+              prop: 'type',
               label: '禁忌类型',
               sortable: true
-            }
-            ,
+            },
             filter: {
               list: [],
-              multiple: false
-            }
-            ,
+              multiple: true
+            },
             style: {
               width: '150',
               align: 'center'
@@ -249,14 +255,13 @@
           },
           star: {
             info: {
-              prop: 'starName',
+              prop: 'star',
               label: '危害指数',
               sortable: true
-            }
-            ,
+            },
             filter: {
               list: [],
-              multiple: false
+              multiple: true
             },
             style: {
               width: '150',
@@ -311,18 +316,6 @@
               align: 'center'
             }
           },
-          author: {
-            info: {
-              prop: 'createUser',
-              label: '作者',
-              sortable: true
-            },
-            filter: {},
-            style: {
-              width: '150',
-              align: 'center'
-            }
-          },
           date: {
             info: {
               prop: 'createTime',
@@ -343,21 +336,40 @@
       this.typeDropdown();
       this.starDropdown();
     },
-    filters:{
+    filters: {
       formatDate1(time) {
         var date = new Date(time);
         return formatDate(date, 'yyyy年MM月dd日');
       }
     },
     methods: {
+      sortChange(s){
+        if (s && s.prop && s.order) {
+          this.sortsJson.pushSortJson({
+            prop: s.prop,
+            order: s.order
+          });
+          this.pageList();
+        }
+      },
+      filterChange(f){
+        this.filtersJson.pushFilterJson(f);
+        this.pageList();
+      },
+      formatType(row)
+      {
+        return row.typeName;
+      },
       filterType(type, item)
       {
         return item.type == type;
       },
+      formatStar(row)
+      {
+        return row.starName;
+      },
       filterStar(star, item)
       {
-          console.dir(star)
-          console.dir(item)
         return item.star == star;
       },
       openDialog(type)
@@ -370,45 +382,42 @@
           this.dialog.title = '禁忌列表';
           this.pageList();
         }
-      }
-      ,
+      },
       handleSizeChange(val)
       {
         this.pageable.pageSize = val;
         this.pageList();
-      }
-      ,
+      },
       handleCurrentChange(val)
       {
         this.pageable.pageNum = val;
         this.pageList();
-      }
-      ,
+      },
       saveForbid()
       {
         this.$$api_forbid_saveForbid(this.forbid, (data) => {
           this.dialog.visible = false;
           this.pageList();
         });
-      }
-      ,
+      },
       updateForbid()
       {
         this.$$api_forbid_updateForbid(this.forbid, (data) => {
           this.dialog.visible = false;
           this.pageList();
         });
-      }
-      ,
-      pageList()
-      {
-        this.$$api_forbid_pageList({pageNo: this.pageable.pageNum, pageSize: this.pageable.pageSize}, (data) => {
+      },
+      pageList(){
+        this.$$api_forbid_pageList({
+          pageNo: this.pageable.pageNum,
+          pageSize: this.pageable.pageSize,
+          sorts: this.sortsJson,
+          filters: this.filtersJson
+        }, (data) => {
           this.pageable = data.obj;
-          console.dir(data)
           this.dialog.visible = false;
         });
-      }
-      ,
+      },
       detail()
       {
         this.$$api_forbid_detail({id: this.forbid.id}, (data) => {
@@ -429,7 +438,7 @@
       {
         this.$$api_forbid_typeList({}, (data) => {
           this.typeItems = data.obj;
-          this.fields.type.filter.list=this.typeItems;
+          this.fields.type.filter.list = this.typeItems;
         });
       }
       ,
@@ -437,7 +446,7 @@
       {
         this.$$api_star_starList({}, (data) => {
           this.starItems = data.obj;
-          this.fields.star.filter.list=this.starItems;
+          this.fields.star.filter.list = this.starItems;
         });
       }
     }

@@ -13,7 +13,7 @@ module.exports = [
     name  : '禁忌分页列表',
     method: 'pageList',
     path  : '/forbid/pagelist',
-    type  : 'get',
+    type  : 'post',
   },
   {
     name  : '禁忌详情',

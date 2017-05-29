@@ -30,7 +30,8 @@ module.exports = {
         }
       },
       '/api/v1': {
-        target: 'http://120.77.172.143:22222',
+        // target: 'http://120.77.172.143:22222',
+        target: 'http://localhost:22222',
         changeOrigin: true,
         pathRewrite: {
           '^/api/v1': '/api/v1'
