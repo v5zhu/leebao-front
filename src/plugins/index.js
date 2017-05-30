@@ -21,6 +21,12 @@ for (var i = 0; i < request.length; i++) {
 }
 Array.prototype.pushSortJson = function (s) {
   var repeat = false;
+  var order;
+  if (s.order === 'descending') {
+    s['order'] = 'desc';
+  } else if (s.order === 'ascending') {
+    s['order'] = 'asc';
+  }
   for (var i = 0; i < this.length; i++) {
     if (s['prop'] === this[i]['prop']) {
       this[i]['order'] = s['order'];

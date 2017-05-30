@@ -345,16 +345,9 @@
     methods: {
       sortChange(s){
         if (s && s.prop && s.order) {
-          var order;
-          console.log(s.order)
-          if (s.order === 'descending') {
-            order = 'desc';
-          } else if (s.order === 'ascending') {
-            order = 'asc';
-          }
           this.sortsJson.pushSortJson({
             prop: s.prop,
-            order: order
+            order: s.order
           });
           this.pageList();
         }
