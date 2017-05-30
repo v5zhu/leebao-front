@@ -3,15 +3,7 @@
   <div class="list">
     <el-form :inline="true" class="demo-form-inline">
       <el-form-item>
-        <el-input placeholder="辐射源"></el-input>
-      </el-form-item>
-      <el-form-item>
-        <el-input placeholder="指数"></el-input>
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary">查询</el-button>
-        <el-button type="primary" @click='openDialog(1)'>添加新的孕期禁忌项</el-button>
-        <el-button type="primary" @click='openDialog(2)'>查看列表</el-button>
+        <el-button type="primary" @click='openDialog'>添加孕期禁忌项</el-button>
       </el-form-item>
     </el-form>
 
@@ -22,7 +14,6 @@
         :prop="fields.name.info.prop"
         :label="fields.name.info.label"
         :align="fields.name.style.align"
-        :width="fields.name.style.width"
         :sortable="fields.name.info.sortable">
       </el-table-column>
       <el-table-column
@@ -31,7 +22,6 @@
         :sortable="fields.type.info.sortable"
         :label="fields.type.info.label"
         :align="fields.type.style.align"
-        :width="fields.type.style.width"
         :formatter="formatType"
         :filters="fields.type.filter.list"
         :filter-method="filterType"
@@ -43,7 +33,6 @@
         :sortable="fields.star.info.sortable"
         :label="fields.star.info.label"
         :align="fields.star.style.align"
-        :width="fields.star.style.width"
         :formatter="formatStar"
         :filters="fields.star.filter.list"
         :filter-method="filterStar"
@@ -53,14 +42,12 @@
         :prop="fields.feature.info.prop"
         :label="fields.feature.info.label"
         :align="fields.feature.style.align"
-        :width="fields.feature.style.width"
         :sortable="fields.feature.info.sortable">
       </el-table-column>
       <el-table-column
         :prop="fields.harm.info.prop"
         :label="fields.harm.info.label"
         :align="fields.harm.style.align"
-        :width="fields.harm.style.width"
         :sortable="fields.harm.info.sortable">
         <template scope="scope">
           <el-popover trigger="hover" placement="top">
@@ -75,19 +62,31 @@
       <el-table-column
         :prop="fields.defense.info.prop"
         :label="fields.defense.info.label"
+        :min-width="fields.defense.style.width"
         :align="fields.defense.style.align"
-        :width="fields.defense.style.width"
         :sortable="fields.defense.info.sortable">
       </el-table-column>
       <el-table-column
         :prop="fields.date.info.prop"
         :label="fields.date.info.label"
         :align="fields.date.style.align"
-        :width="fields.date.style.width"
         :sortable="fields.date.info.sortable">
         <template scope="scope">
           <el-icon name="time"></el-icon>
           <span style="margin-left: 10px">{{ scope.row.createTime | formatDate1}}</span>
+        </template>
+      </el-table-column>
+      <el-table-column
+        :label="'操作'"
+      :min-width="'120'">
+        <template scope="scope">
+          <el-button
+            size="small"
+            @click="editForbid">编辑</el-button>
+          <el-button
+            size="small"
+            type="danger"
+            @click="deleteForbid(1)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -374,16 +373,10 @@
       {
         return item.star == star;
       },
-      openDialog(type)
+      openDialog()
       {
-        if (type === 1) {
-          this.dialog.visible = true;
-          this.dialog.title = '添加禁忌项';
-        } else if (type === 2) {
-          this.dialog.visible = true;
-          this.dialog.title = '禁忌列表';
-          this.pageList();
-        }
+        this.dialog.visible = true;
+        this.dialog.title = '添加禁忌项';
       },
       handleSizeChange(val)
       {
@@ -402,12 +395,15 @@
           this.pageList();
         });
       },
-      updateForbid()
+      editForbid()
       {
         this.$$api_forbid_updateForbid(this.forbid, (data) => {
           this.dialog.visible = false;
           this.pageList();
         });
+      },
+      deleteForbid(id){
+
       },
       pageList(){
         this.$$api_forbid_pageList({
