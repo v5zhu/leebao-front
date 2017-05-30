@@ -22,13 +22,10 @@ for (var i = 0; i < request.length; i++) {
 Array.prototype.pushSortJson = function (s) {
   var repeat = false;
   for (var i = 0; i < this.length; i++) {
-    for (var k1 in s) {
-      for (var k2 in this[i]) {
-        if (s[k1] === this[i][k2]) {
-          repeat = true;
-          break;
-        }
-      }
+    if (s['prop'] === this[i]['prop']) {
+      this[i]['order'] = s['order'];
+      repeat = true;
+      break;
     }
   }
   if (!repeat) {
@@ -43,6 +40,7 @@ Array.prototype.pushFilterJson = function (f) {
     for (var k1 in f) {
       for (var k2 in this[i]) {
         if (k1 === k2) {
+          this[i][k2] = f[k1];
           repeat = true;
           break;
         }

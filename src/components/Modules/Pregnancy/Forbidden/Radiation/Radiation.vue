@@ -199,7 +199,7 @@
         typeItems: [],
         starItems: [],
         sortsJson: [],
-        filtersJson: [],
+        filtersJson: {},
         forbid: {
           id: '',
           name: '',
@@ -345,15 +345,24 @@
     methods: {
       sortChange(s){
         if (s && s.prop && s.order) {
+          var order;
+          console.log(s.order)
+          if (s.order === 'descending') {
+            order = 'desc';
+          } else if (s.order === 'ascending') {
+            order = 'asc';
+          }
           this.sortsJson.pushSortJson({
             prop: s.prop,
-            order: s.order
+            order: order
           });
           this.pageList();
         }
       },
       filterChange(f){
-        this.filtersJson.pushFilterJson(f);
+        for (var k in f) {
+          this.filtersJson[k] = f[k];
+        }
         this.pageList();
       },
       formatType(row)
@@ -409,7 +418,7 @@
       },
       pageList(){
         this.$$api_forbid_pageList({
-          pageNo: this.pageable.pageNum,
+          pageNum: this.pageable.pageNum,
           pageSize: this.pageable.pageSize,
           sorts: this.sortsJson,
           filters: this.filtersJson
