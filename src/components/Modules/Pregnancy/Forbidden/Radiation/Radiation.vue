@@ -10,6 +10,18 @@
     <el-table :data="pageable.list" border fit style="width: 100%" align='center'
               @filter-change="filterChange"
               @sort-change="sortChange">
+      <el-table-column type="expand">
+        <template scope="props">
+          <el-form label-position="left" inline class="demo-table-expand">
+            <el-form-item label="伤害">
+              <span>{{props.row.harmDetail}}</span>
+            </el-form-item>
+            <el-form-item label="如何防范">
+              <span>{{ props.row.defense }}</span>
+            </el-form-item>
+          </el-form>
+        </template>
+      </el-table-column>
       <el-table-column
         :prop="fields.name.info.prop"
         :label="fields.name.info.label"
@@ -74,19 +86,11 @@
           <el-button
             size="small"
             @click="forbidDetail(scope.row.id,'edit')">编辑
-
-
-
-
           </el-button>
           <el-button
             size="small"
             type="danger"
             @click="deleteForbid(scope.row.id)">删除
-
-
-
-
           </el-button>
         </template>
       </el-table-column>
@@ -478,5 +482,18 @@
 <style scoped>
   * {
     font-size: 12px;
+  }
+  .demo-table-expand {
+    font-size: 12px;
+  }
+  .demo-table-expand label {
+    width: 150px;
+    color: #3633bf;
+    font-weight:bolder;
+  }
+  .demo-table-expand .el-form-item {
+    margin-right: 0;
+    margin-bottom: 0;
+    width: 100%;
   }
 </style>
