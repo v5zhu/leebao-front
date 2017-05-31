@@ -68,28 +68,25 @@
         :sortable="fields.defense.info.sortable">
       </el-table-column>
       <el-table-column
-        :prop="fields.date.info.prop"
-        :label="fields.date.info.label"
-        :align="fields.date.style.align"
-        :min-width="'150'"
-        :sortable="fields.date.info.sortable">
-        <template scope="scope">
-          <el-icon name="time"></el-icon>
-          <span style="margin-left: 10px">{{ scope.row.createTime | formatDate1}}</span>
-        </template>
-      </el-table-column>
-      <el-table-column
         :label="'操作'"
         :min-width="'120'">
         <template scope="scope">
           <el-button
             size="small"
-            @click="editForbid">编辑
+            @click="forbidDetail(scope.row.id,'edit')">编辑
+
+
+
+
           </el-button>
           <el-button
             size="small"
             type="danger"
-            @click="deleteForbid(scope.row)">删除
+            @click="deleteForbid(scope.row.id)">删除
+
+
+
+
           </el-button>
         </template>
       </el-table-column>
@@ -185,7 +182,7 @@
       </el-form>
       <span slot="footer" class="dialog-footer">
                 <el-button @click="dialog.visible = false">取 消</el-button>
-                <el-button type="primary" @click="saveForbid">确 定</el-button>
+                <el-button type="primary" @click="saveForbid(forbid.id)">保 存</el-button>
             </span>
     </el-dialog>
     <!--end新增模态框-->
@@ -346,6 +343,11 @@
       }
     },
     methods: {
+      clearForbid(){
+        for (var k in this.forbid) {
+          this.forbid[k] = '';
+        }
+      },
       sortChange(s){
         if (s && s.prop && s.order) {
           this.sortsJson.pushSortJson({
@@ -379,6 +381,7 @@
       },
       openDialog()
       {
+        this.clearForbid();
         this.dialog.visible = true;
         this.dialog.title = '添加禁忌项';
       },
@@ -392,27 +395,37 @@
         this.pageable.pageNum = val;
         this.pageList();
       },
-      saveForbid()
+      saveForbid(id)
       {
-        this.$$api_forbid_saveForbid(this.forbid, (data) => {
-          this.dialog.visible = false;
-          this.pageList();
-        });
+        if (id === '') {
+          this.$$api_forbid_saveForbid(this.forbid, (data) => {
+            this.dialog.visible = false;
+            this.pageList();
+          });
+        } else if (id != '') {
+          this.$$api_forbid_updateForbid(this.forbid, (data) => {
+            this.dialog.visible = false;
+            this.pageList();
+          });
+        }
+
       },
-      editForbid()
+      forbidDetail(id, type)
       {
-        this.$$api_forbid_updateForbid(this.forbid, (data) => {
-          this.dialog.visible = false;
-          this.pageList();
-        });
+        if (type === 'edit') {
+          this.$$api_forbid_detail({id: id}, (data) => {
+            this.dialog.visible = true;
+            this.forbid = data.obj;
+          });
+        }
       },
-      deleteForbid(row){
+      deleteForbid(id){
         this.$confirm('此操作将永久删除该数据, 是否继续?', '提示', {
           confirmButtonText: '删除',
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          this.$$api_forbid_delete({id: row.id}, (data) => {
+          this.$$api_forbid_delete({id: id}, (data) => {
             this.$message({
               type: 'success',
               message: '删除成功!'
