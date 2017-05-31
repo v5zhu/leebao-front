@@ -47,6 +47,7 @@
       <el-table-column
         :prop="fields.harm.info.prop"
         :label="fields.harm.info.label"
+        :min-width="'150'"
         :align="fields.harm.style.align"
         :sortable="fields.harm.info.sortable">
         <template scope="scope">
@@ -70,6 +71,7 @@
         :prop="fields.date.info.prop"
         :label="fields.date.info.label"
         :align="fields.date.style.align"
+        :min-width="'150'"
         :sortable="fields.date.info.sortable">
         <template scope="scope">
           <el-icon name="time"></el-icon>
@@ -78,15 +80,17 @@
       </el-table-column>
       <el-table-column
         :label="'操作'"
-      :min-width="'120'">
+        :min-width="'120'">
         <template scope="scope">
           <el-button
             size="small"
-            @click="editForbid">编辑</el-button>
+            @click="editForbid">编辑
+          </el-button>
           <el-button
             size="small"
             type="danger"
-            @click="deleteForbid(1)">删除</el-button>
+            @click="deleteForbid(scope.row)">删除
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -402,8 +406,26 @@
           this.pageList();
         });
       },
-      deleteForbid(id){
+      deleteForbid(row){
+        this.$confirm('此操作将永久删除该数据, 是否继续?', '提示', {
+          confirmButtonText: '删除',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.$$api_forbid_delete({id: row.id}, (data) => {
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            });
+            this.pageList();
+          });
 
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          });
+        });
       },
       pageList(){
         this.$$api_forbid_pageList({
@@ -422,24 +444,14 @@
           console.dir(data)
           this.dialog.visible = false;
         });
-      }
-      ,
-      delete()
-      {
-        this.$$api_forbid_delete({id: this.forbid.id}, (data) => {
-          console.dir(data)
-          this.dialog.visible = false;
-        });
-      }
-      ,
+      },
       typeDropdown()
       {
         this.$$api_forbid_typeList({}, (data) => {
           this.typeItems = data.obj;
           this.fields.type.filter.list = this.typeItems;
         });
-      }
-      ,
+      },
       starDropdown()
       {
         this.$$api_star_starList({}, (data) => {
