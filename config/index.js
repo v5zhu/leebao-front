@@ -36,7 +36,14 @@ module.exports = {
         pathRewrite: {
           '^/api/v1': '/api/v1'
         }
-      }
+      },
+      // '/slsAdminApi': {
+      //   target: 'http://slsadmin.api.sailengsi.com',
+      //   changeOrigin: true,
+      //   pathRewrite: {
+      //     '^/slsAdminApi': ''
+      //   }
+      // },
     },
     // CSS Sourcemaps off by default because relative paths are "buggy"
     // with this option, according to the CSS-Loader README

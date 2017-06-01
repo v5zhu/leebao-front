@@ -107,7 +107,7 @@
           web_routers        : '',//web页面路由
           api_routers        : '',//API路由
           default_web_routers: '',//访问没有权限的页面时跳转的路由
-          access_status      : false,//是否开启权限
+          access_status      : true,//是否开启权限
         }
       };
     },

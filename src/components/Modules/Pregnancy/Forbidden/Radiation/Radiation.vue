@@ -1,6 +1,6 @@
 <!--suppress ALL -->
 <template>
-  <div class="list">
+  <div class="list" id="forbidApp">
     <el-form :inline="true" class="demo-form-inline">
       <el-form-item>
         <el-button type="primary" @click='openDialog'>添加孕期禁忌项</el-button>
@@ -88,11 +88,23 @@
             @click="forbidDetail(scope.row.id,'edit')">编辑
 
 
+
+
+
+
+
+
           </el-button>
           <el-button
             size="small"
             type="danger"
             @click="deleteForbid(scope.row.id)">删除
+
+
+
+
+
+
 
 
           </el-button>
@@ -125,9 +137,9 @@
                v-model="dialog.visible">
       <el-form style="margin:20px;width:80%;"
                label-width="100px"
-               :model="dialog.user_info"
-               :rules="dialog.user_info_rules"
-               ref='user_info'>
+               :model="this.forbid"
+               :rules="dialog.rules"
+               ref='forbidForm'>
         <el-form-item class='edit-form'
                       label="禁忌源名称"
                       prop='name'>
@@ -220,7 +232,28 @@
         },
         dialog: {
           visible: false,
-          title: '添加孕期禁忌项'
+          title: '添加孕期禁忌项',
+          rules: {
+            name: [
+              {required: true, message: '请输入禁忌源名称', trigger: 'blur'}
+            ],
+            type: [
+              {required: true, message: '请选择类型', trigger: 'blur'}
+            ],
+            star: [
+              {required: true, message: '请选择伤害指数', trigger: 'blur'}
+            ],
+            feature: [
+              {required: true, message: '请输入禁忌源的特征', trigger: 'blur'}
+            ],
+            harm: [
+              {required: true, message: '请输入伤害关键字', trigger: 'blur'},
+              {min: 2, max: 10, message: '关键字2-10位字符', trigger: 'blur'}
+            ],
+            harmDetail: [
+              {required: true, message: '请输入伤害关键字', trigger: 'blur'}
+            ],
+          }
         },
         pageable: {
           pageNum: 1,
@@ -351,10 +384,12 @@
       }
     },
     methods: {
-      clearForbid(){
-        for (var k in this.forbid) {
-          this.forbid[k] = '';
-        }
+      resetForm(formName) {
+        this.$nextTick(function () {
+          if (this.$refs[formName]) {
+            this.$refs[formName].resetFields();
+          }
+        })
       },
       sortChange(s){
         if (s && s.prop && s.order) {
@@ -389,7 +424,7 @@
       },
       openDialog()
       {
-        this.clearForbid();
+        this.resetForm('forbidForm');
         this.dialog.visible = true;
         this.dialog.title = '添加禁忌项';
       },
@@ -405,18 +440,24 @@
       },
       saveForbid(id)
       {
-        if (id === '') {
-          this.$$api_forbid_saveForbid(this.forbid, (data) => {
-            this.dialog.visible = false;
-            this.pageList();
-          });
-        } else if (id != '') {
-          this.$$api_forbid_updateForbid(this.forbid, (data) => {
-            this.dialog.visible = false;
-            this.pageList();
-          });
-        }
-
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+            if (id === '') {
+              this.$$api_forbid_saveForbid(this.forbid, (data) => {
+                this.dialog.visible = false;
+                this.pageList();
+              });
+            } else if (id != '') {
+              this.$$api_forbid_updateForbid(this.forbid, (data) => {
+                this.dialog.visible = false;
+                this.pageList();
+              });
+            }
+          }
+          else {
+            return false;
+          }
+        })
       },
       forbidDetail(id, type)
       {
@@ -426,8 +467,10 @@
             this.forbid = data.obj;
           });
         }
-      },
-      deleteForbid(id){
+      }
+      ,
+      deleteForbid(id)
+      {
         this.$confirm('此操作将永久删除该数据, 是否继续?', '提示', {
           confirmButtonText: '删除',
           cancelButtonText: '取消',
@@ -447,8 +490,10 @@
             message: '已取消删除'
           });
         });
-      },
-      pageList(){
+      }
+      ,
+      pageList()
+      {
         this.$$api_forbid_pageList({
           pageNum: this.pageable.pageNum,
           pageSize: this.pageable.pageSize,
@@ -458,21 +503,24 @@
           this.pageable = data.obj;
           this.dialog.visible = false;
         });
-      },
+      }
+      ,
       detail()
       {
         this.$$api_forbid_detail({id: this.forbid.id}, (data) => {
           console.dir(data)
           this.dialog.visible = false;
         });
-      },
+      }
+      ,
       typeDropdown()
       {
         this.$$api_forbid_typeList({}, (data) => {
           this.typeItems = data.obj;
           this.fields.type.filter.list = this.typeItems;
         });
-      },
+      }
+      ,
       starDropdown()
       {
         this.$$api_star_starList({}, (data) => {

@@ -1,3 +1,4 @@
+<!--suppress ALL -->
 <template>
     <div class="login" :style="winSize">
         <el-row>
@@ -112,10 +113,11 @@
             this.loginActions.disabled = true;
             //如果记住密码，提交的信息包括真实token，密码则是假的
             //服务端登录验证优先级：用户名必须，其次先取token，不存在时再取密码
-            this.$$api_user_login(this[data], data => {
+//            this.$$api_user_login(this[data], data => {
               //登录成功之后，验证是否记住密码，如果记住密码，本地保存记住信息
               //如果没有记住，就初始化本地记住信息
-              var userinfo=data.userinfo;
+//              var userinfo=data.userinfo;
+              var userinfo={"id":896,"pid":78,"username":"vvboot","email":"","sex":"3","status":1,"create_time":"2017-05-14 22:26:40","birthday":"1992-11-05","address":"","token":"9f4895af213130d39454fa03a96c77c8","access_status":2,"web_routers":"","api_routers":"","default_web_routers":"","is_update_pass":1};
               try {
                 userinfo.web_routers = JSON.parse(userinfo.web_routers) ? JSON.parse(userinfo.web_routers) : {};
               } catch (e) {
@@ -136,13 +138,6 @@
                   this.$router.push('/function/open/echarts');
                 }
               });
-            }, {
-              errFn: () => {
-
-                this.loginActions.disabled = false;
-              },
-              tokenFlag: true
-            });
           }
         });
       },

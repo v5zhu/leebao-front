@@ -143,14 +143,14 @@
   }
   #left-menu {
     height: 100%;
-    background: #324057;
+    background: #1F2D3D;
     //position: relative;
     overflow-x: hidden;
   }
   .toggle-menu {
     width: 40px;
     height: 40px;
-    background: #1f2f3d;
+    background: #1F2D3D;
     position: absolute;
     top: 0px;
     /*left: 190px;*/

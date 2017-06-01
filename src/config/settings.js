@@ -5,7 +5,8 @@ var settings = {
 	//全局设置
 	gbs: {
 		host: '/api/v1', //接口根地址。本地代理到slsadmin.api.sls.com,线上使用的是Nginx代理
-		db_prefix: 'sls_admin_', //本地存储的key
+    // host: '/slsAdminApi', //接口根地址。本地代理到slsadmin.api.sls.com,线上使用的是Nginx代理
+    db_prefix: 'sls_admin_', //本地存储的key
 	},
 
 	//回调

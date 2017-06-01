@@ -337,7 +337,7 @@
     .head-nav {
         width: 100%;
         height: 60px;
-        background: #324057;
+        background: #1F2D3D;
         position: fixed;
         top: 0px;
         left: 0px;
