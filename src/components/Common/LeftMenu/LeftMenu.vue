@@ -8,6 +8,7 @@
                     <el-menu
                             class="el-menu-vertical-demo"
                             theme="dark"
+                            style="background-color: #1F2D3D"
                             :default-active="$route.path"
                             unique-opened
                             router>

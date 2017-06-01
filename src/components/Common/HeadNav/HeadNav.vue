@@ -1,13 +1,13 @@
 <template>
     <div>
 
-        <header class="head-nav">
+        <header class="head-nav" >
             <el-row>
                 <el-col :span="4" class='logo-container'>
                     <img src="../../../assets/logo-sm.png" class='logo' alt="">
                 </el-col>
                 <el-col :span="16">
-                    <el-menu theme="dark" :default-active="$store.state.router.headerCurRouter" class="el-menu-demo"
+                    <el-menu theme="dark" style="background-color: #1F2D3D" :default-active="$store.state.router.headerCurRouter" class="el-menu-demo"
                              mode="horizontal" unique-opened router>
                         <!-- v-if='!item.hidden && (($store.state.user.userinfo.access_status===1 && $store.state.user.userinfo.web_routers[item.path]) || $store.state.user.userinfo.access_status!==1)' -->
                         <el-menu-item
