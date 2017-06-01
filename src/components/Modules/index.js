@@ -4,4 +4,5 @@ module.exports = {
 	Adv: require('./Advince/'),
 	Components: require('./Components/'),
 	Pregnancy: require('./Pregnancy/'),
+	Toutiao: require('./Toutiao/Toutiao.vue'),
 };

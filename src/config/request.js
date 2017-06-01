@@ -39,6 +39,10 @@ var request = [{
   module: 'star',
   name: '星级',
   list: require('./request/star.js')
+}, {
+  module: 'toutiao',
+  name: '头条',
+  list: require('./request/toutiao.js')
 }];
 
 module.exports = request;

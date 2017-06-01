@@ -30,3 +30,4 @@ module.exports = [{
 	.concat(require('./router/components.js'))
 	.concat(require('./router/advance.js'))
 	.concat(require('./router/pregnancy.js'))
+	.concat(require('./router/toutiao.js'))
