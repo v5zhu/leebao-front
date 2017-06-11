@@ -7,126 +7,7 @@
         <el-tag size="small" class="radius-17" type="gray" v-else>{{item.author}} ({{item.quantity}})</el-tag>
       </el-badge>
     </span>
-    <el-table :data="pageable.list" border style="width: 100%" align='center'
-              @filter-change="filterChange"
-              @sort-change="sortChange">
-      <el-table-column type="expand">
-        <template scope="props">
-          <el-form label-position="left" inline class="demo-table-expand">
-            <el-form-item label="损害:">
-              <span>{{ props.row.harmDetail }}</span>
-            </el-form-item>
-            <el-form-item label="防范:">
-              <span>{{ props.row.defense }}</span>
-            </el-form-item>
-          </el-form>
-        </template>
-      </el-table-column>
-      <el-table-column
-        :prop="fields.name.info.prop"
-        :label="fields.name.info.label"
-        :align="fields.name.style.align"
-        :sortable="fields.name.info.sortable">
-      </el-table-column>
-      <el-table-column
-        :prop="fields.type.info.prop"
-        :column-key="fields.type.info.prop"
-        :sortable="fields.type.info.sortable"
-        :label="fields.type.info.label"
-        :align="fields.type.style.align"
-        :formatter="formatType"
-        :filters="fields.type.filter.list"
-        :filter-method="filterType"
-        :filter-multiple="fields.type.filter.multiple">
-      </el-table-column>
-      <el-table-column
-        :prop="fields.star.info.prop"
-        :column-key="fields.star.info.prop"
-        :sortable="fields.star.info.sortable"
-        :label="fields.star.info.label"
-        :align="fields.star.style.align"
-        :formatter="formatStar"
-        :filters="fields.star.filter.list"
-        :filter-method="filterStar"
-        :filter-multiple="fields.star.filter.multiple">
-      </el-table-column>
-      <el-table-column
-        :prop="fields.feature.info.prop"
-        :label="fields.feature.info.label"
-        :align="fields.feature.style.align"
-        :sortable="fields.feature.info.sortable">
-      </el-table-column>
-      <el-table-column
-        :prop="fields.harm.info.prop"
-        :label="fields.harm.info.label"
-        :min-width="'150'"
-        :align="fields.harm.style.align"
-        :sortable="fields.harm.info.sortable">
-        <template scope="scope">
-          <el-popover trigger="hover" placement="top">
-            <p>核心词: {{ scope.row.harm }}</p>
-            <p>具体损伤: {{ scope.row.harmDetail }}</p>
-            <div slot="reference" class="name-wrapper" style="word-break: break-all">
-              <el-tag v-if="scope.row.harm!=''">{{ scope.row.harm }}</el-tag>
-            </div>
-          </el-popover>
-        </template>
-      </el-table-column>
-      <el-table-column
-        :prop="fields.defense.info.prop"
-        :label="fields.defense.info.label"
-        :min-width="fields.defense.style.width"
-        :align="fields.defense.style.align"
-        :sortable="fields.defense.info.sortable">
-      </el-table-column>
-      <el-table-column
-        :label="'操作'"
-        :min-width="'120'">
-        <template scope="scope">
-          <el-button
-            size="small"
-            @click="forbidDetail(scope.row.id,'edit')">编辑
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-          </el-button>
-          <el-button
-            size="small"
-            type="danger"
-            @click="deleteForbid(scope.row.id)">删除
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-          </el-button>
-        </template>
-      </el-table-column>
-    </el-table>
+   ...
     <template>
       <div class="block">
         <el-pagination
@@ -140,88 +21,6 @@
         </el-pagination>
       </div>
     </template>
-    <ul type="circle" style="margin-left: 20px">
-      <li>挑选正规厂家生产的合格家电产品</li>
-      <li>不要把家用电器摆的过于集中</li>
-      <li>缩短使用电器的时间</li>
-      <li>有条件的孕妈咪可使用产品质量合格,有相关检测证明的防辐射服装、电视防辐射屏、防辐射窗帘等</li>
-    </ul>
-
-    <!--start新增模态框-->
-    <el-dialog size="small"
-               :title="dialog.title"
-               v-model="dialog.visible">
-      <el-form style="margin:20px;width:80%;"
-               label-width="100px"
-               :model="this.forbid"
-               :rules="dialog.rules"
-               ref='forbidForm'>
-        <el-form-item class='edit-form'
-                      label="禁忌源名称"
-                      prop='name'>
-          <el-input v-model="forbid.name" placeholder='禁忌源名称'></el-input>
-        </el-form-item>
-        <el-form-item class='edit-form'
-                      label="类型"
-                      prop='type'>
-          <!-- select,下拉框 -->
-          <el-select v-model="forbid.type" placeholder="请选择">
-            <el-option
-              v-for="item in typeItems"
-              :key="item.value"
-              :label="item.text"
-              :value="item.value">
-            </el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item class='edit-form'
-                      label="伤害指数"
-                      prop='star'>
-          <!-- select,下拉框 -->
-          <el-select v-model="forbid.star" placeholder="请选择">
-            <el-option
-              v-for="item in starItems"
-              :key="item.value"
-              :label="item.text"
-              :value="item.value">
-            </el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item class='edit-form'
-                      label="禁忌源特征"
-                      prop='feature'>
-          <el-input type="textarea" v-model="forbid.feature" placeholder='禁忌源特征'></el-input>
-        </el-form-item>
-        <el-form-item class='edit-form'
-                      label="损害"
-                      prop='harm'>
-          <el-input type="textarea" v-model="forbid.harm" placeholder='损害概要'></el-input>
-        </el-form-item>
-        <el-form-item class='edit-form'
-                      label="具体损伤"
-                      prop='harmDetail'>
-          <el-input
-            type="textarea"
-            placeholder='具体损伤'
-            auto-complete='off'
-            v-model="forbid.harmDetail"></el-input>
-        </el-form-item>
-        <el-form-item class='edit-form'
-                      label="如何防范"
-                      prop='defense'>
-          <el-input
-            type="textarea"
-            placeholder='如何防范'
-            auto-complete='off'
-            v-model="forbid.defense"></el-input>
-        </el-form-item>
-      </el-form>
-      <span slot="footer" class="dialog-footer">
-                <el-button @click="dialog.visible = false">取 消</el-button>
-                <el-button type="primary" @click="saveForbid(forbid.id)">保 存</el-button>
-            </span>
-    </el-dialog>
-    <!--end新增模态框-->
   </div>
 </template>
 
@@ -231,48 +30,9 @@
     name: 'list',
     data() {
       return {
-        tableData: [],
         authors: [],
-        typeItems: [],
-        starItems: [],
-        sortsJson: [],
         filtersJson: {},
-        authorSelected: 1,
-        forbid: {
-          id: '',
-          name: '',
-          type: '',
-          star: '',
-          feature: '',
-          harm: '',
-          harmDetail: '',
-          defense: ''
-        },
-        dialog: {
-          visible: false,
-          title: '添加孕期禁忌项',
-          rules: {
-            name: [
-              {required: true, message: '请输入禁忌源名称', trigger: 'blur'}
-            ],
-            type: [
-              {required: true, message: '请选择类型', trigger: 'blur'}
-            ],
-            star: [
-              {required: true, message: '请选择伤害指数', trigger: 'blur'}
-            ],
-            feature: [
-              {required: true, message: '请输入禁忌源的特征', trigger: 'blur'}
-            ],
-            harm: [
-              {required: true, message: '请输入伤害关键字', trigger: 'blur'},
-              {min: 2, max: 10, message: '关键字2-10位字符', trigger: 'blur'}
-            ],
-            harmDetail: [
-              {required: true, message: '请输入伤害关键字', trigger: 'blur'}
-            ],
-          }
-        },
+        authorSelected: -1,
         pageable: {
           pageNum: 1,
           pageSize: 5,
@@ -284,123 +44,11 @@
           list: []
         },
         pageSizes: [5, 10, 20, 50, 100],
-        fields: {
-          name: {
-            info: {
-              prop: 'name',
-              label: '禁忌源',
-              sortable: true
-            },
-            filter: {},
-            style: {
-              width: '110',
-              align: 'center'
-            }
-          },
-          type: {
-            info: {
-              prop: 'type',
-              label: '禁忌类型',
-              sortable: true
-            },
-            filter: {
-              list: [],
-              multiple: true
-            },
-            style: {
-              width: '150',
-              align: 'center'
-            }
-          },
-          star: {
-            info: {
-              prop: 'star',
-              label: '危害指数',
-              sortable: true
-            },
-            filter: {
-              list: [],
-              multiple: true
-            },
-            style: {
-              width: '150',
-              align: 'center'
-            }
-          },
-          feature: {
-            info: {
-              prop: 'feature',
-              label: '禁忌源特征',
-              sortable: true
-            },
-            filter: {},
-            style: {
-              width: '170',
-              align: 'center'
-            }
-          },
-          harm: {
-            info: {
-              prop: 'harm',
-              label: '危害',
-              sortable: true
-            },
-            filter: {},
-            style: {
-              width: '250',
-              align: 'center'
-            }
-          },
-          harmDetail: {
-            info: {
-              prop: 'harmDetail',
-              label: '危害说明',
-              sortable: false
-            },
-            filter: {},
-            style: {
-              width: '250',
-              align: 'center'
-            }
-          },
-          defense: {
-            info: {
-              prop: 'defense',
-              label: '防范措施',
-              sortable: true
-            },
-            filter: {},
-            style: {
-              width: '170',
-              align: 'center'
-            }
-          },
-          date: {
-            info: {
-              prop: 'createTime',
-              label: '日期',
-              sortable: true
-            },
-            filter: {},
-            style: {
-              width: '200',
-              align: 'center'
-            }
-          }
-        }
       }
     },
     created(){
-      this.pageList();
+      this.toutiaoList();
       this.authorList();
-      this.typeDropdown();
-      this.starDropdown();
-    },
-    filters: {
-      formatDate1(time) {
-        var date = new Date(time);
-        return formatDate(date, 'yyyy年MM月dd日');
-      }
     },
     methods: {
       authorList(){
@@ -413,49 +61,11 @@
         console.log('index:'+index);
         this.authorSelected=index;
       },
-      resetForm(formName) {
-        this.$nextTick(function () {
-          if (this.$refs[formName]) {
-            this.$refs[formName].resetFields();
-          }
-        })
-      },
-      sortChange(s){
-        if (s && s.prop && s.order) {
-          this.sortsJson.pushSortJson({
-            prop: s.prop,
-            order: s.order
-          });
-          this.pageList();
-        }
-      },
       filterChange(f){
         for (var k in f) {
           this.filtersJson[k] = f[k];
         }
         this.pageList();
-      },
-      formatType(row)
-      {
-        return row.typeName;
-      },
-      filterType(type, item)
-      {
-        return item.type == type;
-      },
-      formatStar(row)
-      {
-        return row.starName;
-      },
-      filterStar(star, item)
-      {
-        return item.star == star;
-      },
-      openDialog()
-      {
-        this.resetForm('forbidForm');
-        this.dialog.visible = true;
-        this.dialog.title = '添加禁忌项';
       },
       handleSizeChange(val)
       {
@@ -467,61 +77,7 @@
         this.pageable.pageNum = val;
         this.pageList();
       },
-      saveForbid(id)
-      {
-        this.$refs[formName].validate((valid) => {
-          if (valid) {
-            if (id === '') {
-              this.$$api_forbid_saveForbid(this.forbid, (data) => {
-                this.dialog.visible = false;
-                this.pageList();
-              });
-            } else if (id != '') {
-              this.$$api_forbid_updateForbid(this.forbid, (data) => {
-                this.dialog.visible = false;
-                this.pageList();
-              });
-            }
-          }
-          else {
-            return false;
-          }
-        })
-      },
-      forbidDetail(id, type)
-      {
-        if (type === 'edit') {
-          this.$$api_forbid_detail({id: id}, (data) => {
-            this.dialog.visible = true;
-            this.forbid = data.obj;
-          });
-        }
-      }
-      ,
-      deleteForbid(id)
-      {
-        this.$confirm('此操作将永久删除该数据, 是否继续?', '提示', {
-          confirmButtonText: '删除',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          this.$$api_forbid_delete({id: id}, (data) => {
-            this.$message({
-              type: 'success',
-              message: '删除成功!'
-            });
-            this.pageList();
-          });
-
-        }).catch(() => {
-          this.$message({
-            type: 'info',
-            message: '已取消删除'
-          });
-        });
-      }
-      ,
-      pageList()
+      toutiaoList()
       {
         this.$$api_toutiao_pageList({
           pageNum: this.pageable.pageNum,
@@ -532,31 +88,7 @@
           this.pageable = data.obj;
           this.dialog.visible = false;
         });
-      }
-      ,
-      detail()
-      {
-        this.$$api_forbid_detail({id: this.forbid.id}, (data) => {
-          console.dir(data)
-          this.dialog.visible = false;
-        });
-      }
-      ,
-      typeDropdown()
-      {
-        this.$$api_forbid_typeList({}, (data) => {
-          this.typeItems = data.obj;
-          this.fields.type.filter.list = this.typeItems;
-        });
-      }
-      ,
-      starDropdown()
-      {
-        this.$$api_star_starList({}, (data) => {
-          this.starItems = data.obj;
-          this.fields.star.filter.list = this.starItems;
-        });
-      }
+      },
     }
   }
 </script>
