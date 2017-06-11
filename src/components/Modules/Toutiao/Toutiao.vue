@@ -2,12 +2,11 @@
 <template>
   <div class="list" id="forbidApp">
     <span v-for="(item,index) in authors" @click="filterToutiao(item,index)" >
-      <el-badge style="margin-left: 20px;" class="item">
-        <el-tag size="small" class="radius-17" color="red" v-if="authorSelected==index"> {{item.author}}（{{item.quantity}}）</el-tag>
-        <el-tag size="small" class="radius-17" v-else>{{item.author}}（{{item.quantity}}）</el-tag>
+      <el-badge style="margin-left: 10px;" class="item">
+        <el-tag size="small" class="radius-17" color="red" v-if="authorSelected==index"> {{item.author}} ({{item.quantity}})</el-tag>
+        <el-tag size="small" class="radius-17" type="gray" v-else>{{item.author}} ({{item.quantity}})</el-tag>
       </el-badge>
     </span>
-
     <el-table :data="pageable.list" border style="width: 100%" align='center'
               @filter-change="filterChange"
               @sort-change="sortChange">
@@ -571,8 +570,11 @@
   }
 
   .radius-17 {
-    border-radius: 17px;
+    border-radius: 10px;
     cursor: pointer;
+    height:30px;
+    vertical-align: middle;
+    line-height: 24px;
   }
 
   .demo-table-expand label {
