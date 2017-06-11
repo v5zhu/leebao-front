@@ -1,6 +1,13 @@
 <!--suppress ALL -->
 <template>
   <div class="list" id="forbidApp">
+    <span v-for="(item,index) in authors" @click="filterToutiao(item,index)" >
+      <el-badge style="margin-left: 20px;" class="item">
+        <el-tag size="small" class="radius-17" color="red" v-if="authorSelected==index"> {{item.author}}（{{item.quantity}}）</el-tag>
+        <el-tag size="small" class="radius-17" v-else>{{item.author}}（{{item.quantity}}）</el-tag>
+      </el-badge>
+    </span>
+
     <el-table :data="pageable.list" border style="width: 100%" align='center'
               @filter-change="filterChange"
               @sort-change="sortChange">
@@ -88,11 +95,27 @@
 
 
 
+
+
+
+
+
+
+
+
           </el-button>
           <el-button
             size="small"
             type="danger"
             @click="deleteForbid(scope.row.id)">删除
+
+
+
+
+
+
+
+
 
 
 
@@ -210,10 +233,12 @@
     data() {
       return {
         tableData: [],
+        authors: [],
         typeItems: [],
         starItems: [],
         sortsJson: [],
         filtersJson: {},
+        authorSelected: 1,
         forbid: {
           id: '',
           name: '',
@@ -368,6 +393,7 @@
     },
     created(){
       this.pageList();
+      this.authorList();
       this.typeDropdown();
       this.starDropdown();
     },
@@ -378,6 +404,16 @@
       }
     },
     methods: {
+      authorList(){
+        this.$$api_toutiao_authorList({}, (data) => {
+          this.authors = data.obj;
+        });
+      },
+      filterToutiao(item,index){
+        console.log('item:'+JSON.stringify(item))
+        console.log('index:'+index);
+        this.authorSelected=index;
+      },
       resetForm(formName) {
         this.$nextTick(function () {
           if (this.$refs[formName]) {
@@ -532,6 +568,11 @@
 
   .demo-table-expand {
     font-size: 0;
+  }
+
+  .radius-17 {
+    border-radius: 17px;
+    cursor: pointer;
   }
 
   .demo-table-expand label {
