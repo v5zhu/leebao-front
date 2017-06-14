@@ -7,7 +7,7 @@ module.exports = [
     name: '头条列表',
     method: 'pageList',
     path: '/toutiao/overview',
-    type: 'get',
+    type: 'post',
   }, {
     name: '头条作者列表',
     method: 'authorList',
