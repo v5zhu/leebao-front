@@ -11,6 +11,7 @@
     </span>
       ...
 
+
     </div>
     <ul>
       <li class='list' v-for="tt in pageable.list">
@@ -87,9 +88,13 @@
         });
       },
       filterToutiao(item, index){
-        this.authorSelected = index;
-        this.authorSelected = index;
-        this.filtersJson['author'] = this.authors[index].author;
+        if (this.authorSelected === index) {
+          this.authorSelected = -1;
+          this.filtersJson = {};
+        } else {
+          this.authorSelected = index;
+          this.filtersJson['author'] = this.authors[index].author;
+        }
         this.toutiaoList();
       },
       handleSizeChange(val)
