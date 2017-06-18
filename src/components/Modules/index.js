@@ -5,4 +5,5 @@ module.exports = {
 	Components: require('./Components/'),
 	Pregnancy: require('./Pregnancy/'),
 	Toutiao: require('./Toutiao/Toutiao.vue'),
+	Overtime: require('./Overtime/Overtime.vue')
 };

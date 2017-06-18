@@ -43,6 +43,10 @@ var request = [{
   module: 'toutiao',
   name: '头条',
   list: require('./request/toutiao.js')
+}, {
+  module: 'overtime',
+  name: '加班信息',
+  list: require('./request/overtime.js')
 }];
 
 module.exports = request;
