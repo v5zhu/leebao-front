@@ -251,7 +251,7 @@
         fields: {
           time: {
             info: {
-              prop: 'time',
+              prop: 'start_time',
               label: '加班时间',
               sortable: true
             },
