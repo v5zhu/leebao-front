@@ -5,7 +5,7 @@
 module.exports = [
   {
     name: '录入加班',
-    method: 'saveOvertime',
+    method: 'save',
     path: '/overtime/save',
     type: 'post',
   }, {

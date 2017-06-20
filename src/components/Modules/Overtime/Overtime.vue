@@ -3,79 +3,71 @@
   <div class="list" id="overtimeApp">
     <el-form :inline="true" class="demo-form-inline">
       <el-form-item>
-        <el-button type="primary" @click='openDialog'>录入加班记录</el-button>
+        <el-button type="primary" @click='openDialog'>录入加班</el-button>
       </el-form-item>
     </el-form>
-
     <el-table :data="pageable.list" border style="width: 100%" align='center'
               @filter-change="filterChange"
               @sort-change="sortChange">
       <el-table-column type="expand">
         <template scope="props">
           <el-form label-position="left" inline class="demo-table-expand">
-            <el-form-item label="加班事由:">
-              <span>{{ props.row.reason }}</span>
+            <el-form-item label="加班人员:">
+              <span>{{ props.row.people }}</span>
             </el-form-item>
-            <el-form-item label="加班费:">
-              <span>{{ props.row.cost }}</span>
+            <el-form-item label="是否打车:">
+              <span>{{ props.row.taxi | formatTaxi}}</span>
+            </el-form-item>
+            <el-form-item label="备注信息:">
+              <span>{{ props.row.remark }}</span>
+            </el-form-item>
+            <el-form-item label="开始时间:">
+              <span>{{ props.row.startTime | formatFullDate }}</span>
+            </el-form-item>
+            <el-form-item label="结束时间:">
+              <span>{{ props.row.endTime | formatFullDate }}</span>
             </el-form-item>
           </el-form>
         </template>
       </el-table-column>
       <el-table-column
-        :prop="fields.startTime.info.prop"
-        :label="fields.startTime.info.label"
-        :align="fields.startTime.style.align"
-        :sortable="fields.startTime.info.sortable">
-      </el-table-column>
-      <el-table-column
-        :prop="fields.endTime.info.prop"
-        :column-key="fields.endTime.info.prop"
-        :sortable="fields.endTime.info.sortable"
-        :label="fields.endTime.info.label"
-        :align="fields.endTime.style.align"
-        :formatter="formatType"
-        :filters="fields.endTime.filter.list"
-        :filter-method="filterType"
-        :filter-multiple="fields.endTime.filter.multiple">
+        :prop="fields.time.info.prop"
+        :label="fields.time.info.label"
+        :min-width="fields.time.style.width"
+        :align="fields.time.style.align"
+        :sortable="fields.time.info.sortable">
+        <template scope="scope">
+          <el-icon name="time"></el-icon>
+          <span
+            style="margin-left: 10px">{{ scope.row.startTime | formatDate1}}~{{ scope.row.endTime | formatDate1}}</span>
+        </template>
       </el-table-column>
       <el-table-column
         :prop="fields.week.info.prop"
         :column-key="fields.week.info.prop"
         :sortable="fields.week.info.sortable"
         :label="fields.week.info.label"
+        :min-width="fields.week.style.width"
         :align="fields.week.style.align"
-        :formatter="formatStar"
+        :formatter="formatWeek"
         :filters="fields.week.filter.list"
-        :filter-method="filterStar"
+        :filter-method="filterWeek"
         :filter-multiple="fields.week.filter.multiple">
       </el-table-column>
       <el-table-column
         :prop="fields.reason.info.prop"
         :label="fields.reason.info.label"
+        :min-width="fields.reason.style.width"
         :align="fields.reason.style.align"
         :sortable="fields.reason.info.sortable">
-      </el-table-column>
-      <el-table-column
-        :prop="fields.people.info.prop"
-        :label="fields.people.info.label"
-        :min-width="'150'"
-        :align="fields.people.style.align"
-        :sortable="fields.people.info.sortable">
       </el-table-column>
       <el-table-column
         :prop="fields.clock.info.prop"
         :label="fields.clock.info.label"
         :min-width="fields.clock.style.width"
         :align="fields.clock.style.align"
+        :formatter="formatClock"
         :sortable="fields.clock.info.sortable">
-      </el-table-column>
-      <el-table-column
-        :prop="fields.taxi.info.prop"
-        :label="fields.taxi.info.label"
-        :min-width="fields.taxi.style.width"
-        :align="fields.taxi.style.align"
-        :sortable="fields.taxi.info.sortable">
       </el-table-column>
       <el-table-column
         :prop="fields.cost.info.prop"
@@ -83,28 +75,6 @@
         :min-width="fields.cost.style.width"
         :align="fields.cost.style.align"
         :sortable="fields.cost.info.sortable">
-      </el-table-column>
-      <el-table-column
-        :prop="fields.remark.info.prop"
-        :label="fields.remark.info.label"
-        :min-width="fields.remark.style.width"
-        :align="fields.remark.style.align"
-        :sortable="fields.remark.info.sortable">
-      </el-table-column>
-      <el-table-column
-        :label="'操作'"
-        :min-width="'120'">
-        <template scope="scope">
-         <!-- <el-button
-            size="small"
-            @click="forbidDetail(scope.row.id,'edit')">编辑
-          </el-button>-->
-         <!-- <el-button
-            size="small"
-            type="danger"
-            @click="deleteForbid(scope.row.id)">删除
-          </el-button>-->
-        </template>
       </el-table-column>
     </el-table>
     <template>
@@ -128,34 +98,92 @@
                label-width="100px"
                :model="this.overtime"
                :rules="dialog.rules"
-               ref='forbidForm'>
+               ref='overtimeForm'>
         <el-form-item class='edit-form'
                       label="加班事由"
-                      prop='name'>
+                      prop='reason'>
           <el-input v-model="overtime.reason" placeholder='加班事由'></el-input>
+        </el-form-item>
+        <el-form-item class='edit-form'
+                      label="人员名单"
+                      prop='people'>
+          <el-input v-model="overtime.people" placeholder='加班人员名单'></el-input>
+        </el-form-item>
+        <el-form-item class='edit-form'
+                      label="开始时间"
+                      prop='startTime'>
+          <div class="block">
+            <el-date-picker
+              v-model="overtime.startTime"
+              type="datetime"
+              placeholder="选择加班开始时间">
+            </el-date-picker>
+          </div>
+        </el-form-item>
+        <el-form-item class='edit-form'
+                      label="结束时间"
+                      prop='endTime'>
+          <div class="block">
+            <el-date-picker
+              v-model="overtime.endTime"
+              type="datetime"
+              placeholder="选择加班结束时间">
+            </el-date-picker>
+          </div>
         </el-form-item>
         <el-form-item class='edit-form'
                       label="星期"
                       prop='week'>
           <!-- select,下拉框 -->
-          <el-select v-model="overtime.week" placeholder="请选择">
+          <el-select v-model="overtime.week" placeholder="请选择星期">
             <el-option
-              v-for="wk in [1,2,3,4,5,6,7]"
-              :key="wk"
-              :label="wk"
-              :value="wk">
+              v-for="item in fields.week.filter.list"
+              :key="item.value"
+              :label="item.text"
+              :value="item.value">
             </el-option>
           </el-select>
         </el-form-item>
         <el-form-item class='edit-form'
-                      label="加班人员"
-                      prop='feature'>
-          <el-input type="textarea" v-model="overtime.people" placeholder='加班人员'></el-input>
+                      label="是否打卡"
+                      prop='clock'>
+          <!-- select,下拉框 -->
+          <el-select v-model="overtime.clock" placeholder="请选择是否打卡">
+            <el-option
+              v-for="item in yesOrNo"
+              :key="item.value"
+              :label="item.text"
+              :value="item.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item class='edit-form'
+                      label="是否打车"
+                      prop='taxi'>
+          <!-- select,下拉框 -->
+          <el-select v-model="overtime.taxi" placeholder="请选择是否打车">
+            <el-option
+              v-for="item in yesOrNo"
+              :key="item.value"
+              :label="item.text"
+              :value="item.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item class='edit-form'
+                      label="加班费"
+                      prop='cost'>
+          <el-input v-model="overtime.cost" placeholder='请填加班费'></el-input>
+        </el-form-item>
+        <el-form-item class='edit-form'
+                      label="其他备注"
+                      prop='remark'>
+          <el-input v-model="overtime.remark" placeholder='请填写其他备注信息'></el-input>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
                 <el-button @click="dialog.visible = false">取 消</el-button>
-                <el-button type="primary" @click="saveForbid(overtime.id)">保 存</el-button>
+                <el-button type="primary" @click="saveOvertime">保 存</el-button>
             </span>
     </el-dialog>
     <!--end新增模态框-->
@@ -170,6 +198,7 @@
       return {
         sortsJson: [],
         filtersJson: {},
+        yesOrNo: [{value: '0', text: '否'}, {value: '1', text: '是'}],
         overtime: {
           id: '',
           reason: '',
@@ -186,27 +215,26 @@
         },
         dialog: {
           visible: false,
-          title: '添加孕期禁忌项',
+          title: '录入加班',
           rules: {
-            name: [
-              {required: true, message: '请输入禁忌源名称', trigger: 'blur'}
+            reason: [
+              {required: true, message: '请输入加班原因', trigger: 'blur'}
             ],
-            type: [
-              {required: true, message: '请选择类型', trigger: 'blur'}
+            people: [
+              {required: true, message: '请填写加班人员名单', trigger: 'blur'}
             ],
-            star: [
-              {required: true, message: '请选择伤害指数', trigger: 'blur'}
+            week: [
+              {required: true, message: '请选择星期', trigger: 'blur'}
             ],
-            feature: [
-              {required: true, message: '请输入禁忌源的特征', trigger: 'blur'}
+            clock: [
+              {required: true, message: '请选择是否打卡', trigger: 'change'}
             ],
-            harm: [
-              {required: true, message: '请输入伤害关键字', trigger: 'blur'},
-              {min: 2, max: 10, message: '关键字2-10位字符', trigger: 'blur'}
+            taxi: [
+              {required: true, message: '请选择是否打车', trigger: 'change'}
             ],
-            harmDetail: [
-              {required: true, message: '请输入伤害关键字', trigger: 'blur'}
-            ],
+            cost: [
+              {required: true, message: '请输入此次加班费', trigger: 'blur'}
+            ]
           }
         },
         pageable: {
@@ -221,28 +249,13 @@
         },
         pageSizes: [5, 10, 20, 50, 100],
         fields: {
-          startTime: {
+          time: {
             info: {
-              prop: 'startTime',
-              label: '开始时间',
+              prop: 'time',
+              label: '加班时间',
               sortable: true
             },
             filter: {},
-            style: {
-              width: '110',
-              align: 'center'
-            }
-          },
-          endTime: {
-            info: {
-              prop: 'endTime',
-              label: '结束时间',
-              sortable: true
-            },
-            filter: {
-              list: [],
-              multiple: true
-            },
             style: {
               width: '150',
               align: 'center'
@@ -255,11 +268,19 @@
               sortable: true
             },
             filter: {
-              list: [],
+              list: [
+                {value: '1', text: '星期一'},
+                {value: '2', text: '星期二'},
+                {value: '3', text: '星期三'},
+                {value: '4', text: '星期四'},
+                {value: '5', text: '星期五'},
+                {value: '6', text: '星期六'},
+                {value: '7', text: '星期天'}
+              ],
               multiple: true
             },
             style: {
-              width: '150',
+              width: '90',
               align: 'center'
             }
           },
@@ -271,22 +292,10 @@
             },
             filter: {
               list: [],
-              multiple: true
+              multiple: false
             },
             style: {
-              width: '150',
-              align: 'center'
-            }
-          },
-          people: {
-            info: {
-              prop: 'people',
-              label: '加班人员',
-              sortable: true
-            },
-            filter: {},
-            style: {
-              width: '170',
+              width: '280',
               align: 'center'
             }
           },
@@ -298,43 +307,19 @@
             },
             filter: {},
             style: {
-              width: '250',
-              align: 'center'
-            }
-          },
-          taxi: {
-            info: {
-              prop: 'taxi',
-              label: '是否打车',
-              sortable: true
-            },
-            filter: {},
-            style: {
-              width: '250',
+              width: '90',
               align: 'center'
             }
           },
           cost: {
             info: {
               prop: 'cost',
-              label: '加班费',
+              label: '加班费(元)',
               sortable: false
             },
             filter: {},
             style: {
-              width: '170',
-              align: 'center'
-            }
-          },
-          remark: {
-            info: {
-              prop: 'remark',
-              label: '备注',
-              sortable: true
-            },
-            filter: {},
-            style: {
-              width: '200',
+              width: '90',
               align: 'center'
             }
           }
@@ -347,7 +332,14 @@
     filters: {
       formatDate1(time) {
         var date = new Date(time);
-        return formatDate(date, 'yyyy年MM月dd日');
+        return formatDate(date, 'MM-dd hh:mm');
+      },
+      formatFullDate(time) {
+        var date = new Date(time);
+        return formatDate(date, 'yyyy-MM-dd hh:mm');
+      },
+      formatTaxi(taxi){
+        return taxi === 1 ? '是' : "否"
       }
     },
     methods: {
@@ -364,62 +356,72 @@
             prop: s.prop,
             order: s.order
           });
-          this.pageList();
+          this.overtimeList();
         }
       },
       filterChange(f){
         for (var k in f) {
           this.filtersJson[k] = f[k];
         }
-        this.pageList();
+        this.overtimeList();
       },
-      formatType(row)
+      formatWeek(row)
       {
-        return row.typeName;
+        switch (row.week) {
+          case '1':
+            return '星期一';
+          case '2':
+            return '星期二';
+          case '3':
+            return '星期三';
+          case '4':
+            return '星期四';
+          case '5':
+            return '星期五';
+          case '6':
+            return '星期六';
+          case 7:
+            return '星期天';
+        }
       },
-      filterType(type, item)
-      {
-        return item.type == type;
+      formatClock(clock){
+        return clock === 1 ? '是' : "否"
       },
-      formatStar(row)
+      filterWeek(week, item)
       {
-        return row.starName;
+        return item.week == week;
       },
-      filterStar(star, item)
-      {
-        return item.star == star;
+      resetForm(formName) {
+        this.$nextTick(function () {
+          if (this.$refs[formName]) {
+            this.$refs[formName].resetFields();
+          }
+        })
       },
       openDialog()
       {
-        this.resetForm('forbidForm');
+        this.resetForm('overtimeForm');
         this.dialog.visible = true;
-        this.dialog.title = '添加禁忌项';
+        this.dialog.title = '录入加班记录';
       },
       handleSizeChange(val)
       {
         this.pageable.pageSize = val;
-        this.pageList();
+        this.overtimeList();
       },
       handleCurrentChange(val)
       {
         this.pageable.pageNum = val;
-        this.pageList();
+        this.overtimeList();
       },
-      saveForbid(id)
+      saveOvertime()
       {
-        this.$refs[formName].validate((valid) => {
+        this.$refs['overtimeForm'].validate((valid) => {
           if (valid) {
-            if (id === '') {
-              this.$$api_forbid_saveForbid(this.forbid, (data) => {
-                this.dialog.visible = false;
-                this.pageList();
-              });
-            } else if (id != '') {
-              this.$$api_forbid_updateForbid(this.forbid, (data) => {
-                this.dialog.visible = false;
-                this.pageList();
-              });
-            }
+            this.$$api_overtime_save(this.overtime, (data) => {
+              this.dialog.visible = false;
+              this.overtimeList();
+            });
           }
           else {
             return false;
