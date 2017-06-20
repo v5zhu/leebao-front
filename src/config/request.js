@@ -47,6 +47,18 @@ var request = [{
   module: 'overtime',
   name: '加班信息',
   list: require('./request/overtime.js')
+}, {
+  module: 'school_organization',
+  name: '培训机构',
+  list: require('./request/schoolOrganization.js')
+}, {
+  module: 'student',
+  name: '学生信息',
+  list: require('./request/student.js')
+}, {
+  module: 'train',
+  name: '培训记录',
+  list: require('./request/train.js')
 }];
 
 module.exports = request;
