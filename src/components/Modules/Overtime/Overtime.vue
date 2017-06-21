@@ -7,6 +7,8 @@
       </el-form-item>
     </el-form>
     <el-table :data="pageable.list" border style="width: 100%" align='center'
+              show-summary
+              :summary-method="getSummaries"
               @filter-change="filterChange"
               @sort-change="sortChange">
       <el-table-column type="expand">
@@ -343,6 +345,31 @@
       }
     },
     methods: {
+      getSummaries(param){
+        const { columns, data } = param;
+        const sums = [];
+        columns.forEach((column, index) => {
+          if (index === 0) {
+            sums[index] = '总计';
+          }else if(index===1||index===2||index===3||index===4){
+              sums[index]='';
+              return;
+          }
+          const values = data.map(item => Number(item[column.property]));
+          if (!values.every(value => isNaN(value))) {
+            sums[index] = values.reduce((prev, curr) => {
+              const value = Number(curr);
+              if (!isNaN(value)) {
+                return prev + curr;
+              } else {
+                return prev;
+              }
+            }, 0);
+            sums[index] += ' 元';
+          }
+        });
+        return sums;
+      },
       resetForm(formName) {
         this.$nextTick(function () {
           if (this.$refs[formName]) {
@@ -368,17 +395,17 @@
       formatWeek(row)
       {
         switch (row.week) {
-          case '1':
+          case 1:
             return '星期一';
-          case '2':
+          case 2:
             return '星期二';
-          case '3':
+          case 3:
             return '星期三';
-          case '4':
+          case 4:
             return '星期四';
-          case '5':
+          case 5:
             return '星期五';
-          case '6':
+          case 6:
             return '星期六';
           case 7:
             return '星期天';
