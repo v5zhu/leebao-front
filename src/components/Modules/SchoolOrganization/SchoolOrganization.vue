@@ -1,9 +1,9 @@
 <!--suppress ALL -->
 <template>
-  <div class="list" id="overtimeApp">
+  <div class="list" id="schoolOrganizationApp">
     <el-form :inline="true" class="demo-form-inline">
       <el-form-item>
-        <el-button type="primary" @click='openDialog'>录入加班</el-button>
+        <el-button type="primary" @click='openDialog'>添加机构</el-button>
       </el-form-item>
     </el-form>
     <el-table :data="pageable.list" border style="width: 100%" align='center'
@@ -12,69 +12,47 @@
       <el-table-column type="expand">
         <template scope="props">
           <el-form label-position="left" inline class="demo-table-expand">
-            <el-form-item label="加班人员:">
-              <span>{{ props.row.people }}</span>
+            <el-form-item label="信息录入时间:">
+              <span>{{ props.row.createTime | formatFullDate }}</span>
             </el-form-item>
-            <el-form-item label="是否打车:">
-              <span>{{ props.row.taxi | formatTaxi}}</span>
-            </el-form-item>
-            <el-form-item label="备注信息:">
-              <span>{{ props.row.remark }}</span>
-            </el-form-item>
-            <el-form-item label="开始时间:">
-              <span>{{ props.row.startTime | formatFullDate }}</span>
-            </el-form-item>
-            <el-form-item label="结束时间:">
-              <span>{{ props.row.endTime | formatFullDate }}</span>
+            <el-form-item label="最后更新时间:">
+              <span>{{ props.row.updateTime | formatFullDate}}</span>
             </el-form-item>
           </el-form>
         </template>
       </el-table-column>
       <el-table-column
-        :prop="fields.time.info.prop"
-        :label="fields.time.info.label"
-        :min-width="fields.time.style.width"
-        :align="fields.time.style.align"
-        :sortable="fields.time.info.sortable">
-        <template scope="scope">
-          <el-icon name="time"></el-icon>
-          <span
-            style="margin-left: 10px">{{ scope.row.startTime | formatDate1}}~{{ scope.row.endTime | formatDate1}}</span>
-        </template>
+        :prop="fields.name.info.prop"
+        :column-key="fields.name.info.prop"
+        :label="fields.name.info.label"
+        :min-width="fields.name.style.width"
+        :align="fields.name.style.align"
+        :sortable="fields.name.info.sortable"
+        :formatter="formatOrgName"
+        :filters="fields.name.filter.list"
+        :filter-method="filterOrgName"
+        :filter-multiple="fields.name.filter.multiple">
       </el-table-column>
       <el-table-column
-        :prop="fields.week.info.prop"
-        :column-key="fields.week.info.prop"
-        :sortable="fields.week.info.sortable"
-        :label="fields.week.info.label"
-        :min-width="fields.week.style.width"
-        :align="fields.week.style.align"
-        :formatter="formatWeek"
-        :filters="fields.week.filter.list"
-        :filter-method="filterWeek"
-        :filter-multiple="fields.week.filter.multiple">
+        :prop="fields.boss.info.prop"
+        :column-key="fields.boss.info.prop"
+        :sortable="fields.boss.info.sortable"
+        :label="fields.boss.info.label"
+        :min-width="fields.boss.style.width"
+        :align="fields.boss.style.align">
       </el-table-column>
       <el-table-column
-        :prop="fields.reason.info.prop"
-        :label="fields.reason.info.label"
-        :min-width="fields.reason.style.width"
-        :align="fields.reason.style.align"
-        :sortable="fields.reason.info.sortable">
+        :prop="fields.address.info.prop"
+        :label="fields.address.info.label"
+        :min-width="fields.address.style.width"
+        :align="fields.address.style.align"
+        :sortable="fields.address.info.sortable">
       </el-table-column>
       <el-table-column
-        :prop="fields.clock.info.prop"
-        :label="fields.clock.info.label"
-        :min-width="fields.clock.style.width"
-        :align="fields.clock.style.align"
-        :formatter="formatClock"
-        :sortable="fields.clock.info.sortable">
-      </el-table-column>
-      <el-table-column
-        :prop="fields.cost.info.prop"
-        :label="fields.cost.info.label"
-        :min-width="fields.cost.style.width"
-        :align="fields.cost.style.align"
-        :sortable="fields.cost.info.sortable">
+        :prop="fields.remark.info.prop"
+        :label="fields.remark.info.label"
+        :min-width="fields.remark.style.width"
+        :align="fields.remark.style.align">
       </el-table-column>
     </el-table>
     <template>
@@ -96,94 +74,33 @@
                v-model="dialog.visible">
       <el-form style="margin:20px;width:80%;"
                label-width="100px"
-               :model="this.overtime"
+               :model="this.organization"
                :rules="dialog.rules"
-               ref='overtimeForm'>
+               ref='schoolOrganizationForm'>
         <el-form-item class='edit-form'
-                      label="加班事由"
-                      prop='reason'>
-          <el-input v-model="overtime.reason" placeholder='加班事由'></el-input>
+                      label="机构名称"
+                      prop='name'>
+          <el-input v-model="organization.name" placeholder='机构名称'></el-input>
         </el-form-item>
         <el-form-item class='edit-form'
-                      label="人员名单"
+                      label="机构老板"
                       prop='people'>
-          <el-input v-model="overtime.people" placeholder='加班人员名单'></el-input>
+          <el-input v-model="organization.boss" placeholder='机构老板'></el-input>
         </el-form-item>
         <el-form-item class='edit-form'
-                      label="开始时间"
-                      prop='startTime'>
-          <div class="block">
-            <el-date-picker
-              v-model="overtime.startTime"
-              type="datetime"
-              placeholder="选择加班开始时间">
-            </el-date-picker>
-          </div>
+                      label="机构地址"
+                      prop='address'>
+          <el-input v-model="organization.address" placeholder='机构地址'></el-input>
         </el-form-item>
         <el-form-item class='edit-form'
-                      label="结束时间"
-                      prop='endTime'>
-          <div class="block">
-            <el-date-picker
-              v-model="overtime.endTime"
-              type="datetime"
-              placeholder="选择加班结束时间">
-            </el-date-picker>
-          </div>
-        </el-form-item>
-        <el-form-item class='edit-form'
-                      label="星期"
-                      prop='week'>
-          <!-- select,下拉框 -->
-          <el-select v-model="overtime.week" placeholder="请选择星期">
-            <el-option
-              v-for="item in fields.week.filter.list"
-              :key="item.value"
-              :label="item.text"
-              :value="item.value">
-            </el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item class='edit-form'
-                      label="是否打卡"
-                      prop='clock'>
-          <!-- select,下拉框 -->
-          <el-select v-model="overtime.clock" placeholder="请选择是否打卡">
-            <el-option
-              v-for="item in yesOrNo"
-              :key="item.value"
-              :label="item.text"
-              :value="item.value">
-            </el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item class='edit-form'
-                      label="是否打车"
-                      prop='taxi'>
-          <!-- select,下拉框 -->
-          <el-select v-model="overtime.taxi" placeholder="请选择是否打车">
-            <el-option
-              v-for="item in yesOrNo"
-              :key="item.value"
-              :label="item.text"
-              :value="item.value">
-            </el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item class='edit-form'
-                      label="加班费"
-                      prop='cost'>
-          <el-input v-model="overtime.cost" placeholder='请填加班费'></el-input>
-        </el-form-item>
-        <el-form-item class='edit-form'
-                      label="其他备注"
+                      label="备注"
                       prop='remark'>
-          <el-input v-model="overtime.remark" placeholder='请填写其他备注信息'></el-input>
+          <el-input v-model="organization.remark" placeholder='请填写其他备注信息'></el-input>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
                 <el-button @click="dialog.visible = false">取 消</el-button>
-                <el-button type="primary" @click="saveOvertime">保 存</el-button>
+                <el-button type="primary" @click="saveOrg">保 存</el-button>
             </span>
     </el-dialog>
     <!--end新增模态框-->
@@ -198,42 +115,27 @@
       return {
         sortsJson: [],
         filtersJson: {},
-        yesOrNo: [{value: '0', text: '否'}, {value: '1', text: '是'}],
-        overtime: {
+        organization: {
           id: '',
-          reason: '',
-          people: '',
-          startTime: '',
-          endTime: '',
-          week: '',
-          clock: '',
-          taxi: '',
-          cost: '',
+          name: '',
+          boss: '',
+          address: '',
           remark: '',
           createTime: '',
           updateTime: ''
         },
         dialog: {
           visible: false,
-          title: '录入加班',
+          title: '添加机构',
           rules: {
-            reason: [
-              {required: true, message: '请输入加班原因', trigger: 'blur'}
+            name: [
+              {required: true, message: '请输入机构名称', trigger: 'blur'}
             ],
-            people: [
-              {required: true, message: '请填写加班人员名单', trigger: 'blur'}
+            boss: [
+              {required: true, message: '请填写机构老板或负责人', trigger: 'blur'}
             ],
-            week: [
-              {required: true, message: '请选择星期', trigger: 'blur'}
-            ],
-            clock: [
-              {required: true, message: '请选择是否打卡', trigger: 'change'}
-            ],
-            taxi: [
-              {required: true, message: '请选择是否打车', trigger: 'change'}
-            ],
-            cost: [
-              {required: true, message: '请输入此次加班费', trigger: 'blur'}
+            address: [
+              {required: true, message: '请填写机构所处地址', trigger: 'blur'}
             ]
           }
         },
@@ -249,45 +151,37 @@
         },
         pageSizes: [5, 10, 20, 50, 100],
         fields: {
-          time: {
+          name: {
             info: {
-              prop: 'time',
-              label: '加班时间',
+              prop: 'name',
+              label: '机构名称',
               sortable: true
             },
-            filter: {},
+            filter: {
+              list: [],
+              multiple: true
+            },
             style: {
               width: '150',
               align: 'center'
             }
           },
-          week: {
+          boss: {
             info: {
-              prop: 'week',
-              label: '星期',
+              prop: 'boss',
+              label: '机构老板',
               sortable: true
             },
-            filter: {
-              list: [
-                {value: '1', text: '星期一'},
-                {value: '2', text: '星期二'},
-                {value: '3', text: '星期三'},
-                {value: '4', text: '星期四'},
-                {value: '5', text: '星期五'},
-                {value: '6', text: '星期六'},
-                {value: '7', text: '星期天'}
-              ],
-              multiple: true
-            },
+            filter: {},
             style: {
               width: '90',
               align: 'center'
             }
           },
-          reason: {
+          address: {
             info: {
-              prop: 'reason',
-              label: '加班事由',
+              prop: 'address',
+              label: '机构地址',
               sortable: true
             },
             filter: {
@@ -299,27 +193,15 @@
               align: 'center'
             }
           },
-          clock: {
+          remark: {
             info: {
-              prop: 'clock',
-              label: '是否打卡',
-              sortable: true
-            },
-            filter: {},
-            style: {
-              width: '90',
-              align: 'center'
-            }
-          },
-          cost: {
-            info: {
-              prop: 'cost',
-              label: '加班费(元)',
+              prop: 'remark',
+              label: '备注',
               sortable: false
             },
             filter: {},
             style: {
-              width: '90',
+              width: '200',
               align: 'center'
             }
           }
@@ -327,19 +209,16 @@
       }
     },
     created(){
-      this.overtimeList();
+      this.orgList();
+      this.organizationDropdown();
     },
     filters: {
-      formatDate1(time) {
-        var date = new Date(time);
-        return formatDate(date, 'MM-dd hh:mm');
-      },
       formatFullDate(time) {
+        if (!time) {
+          return ;
+        }
         var date = new Date(time);
         return formatDate(date, 'yyyy-MM-dd hh:mm');
-      },
-      formatTaxi(taxi){
-        return taxi === 1 ? '是' : "否"
       }
     },
     methods: {
@@ -356,40 +235,23 @@
             prop: s.prop,
             order: s.order
           });
-          this.overtimeList();
+          this.orgList();
         }
+      },
+      formatOrgName(row){
+        return row.name;
+      },
+      filterOrgName(org, item)
+      {
+        console.log(org)
+        console.log(JSON.stringify(item))
+        return item.name == org;
       },
       filterChange(f){
         for (var k in f) {
           this.filtersJson[k] = f[k];
         }
-        this.overtimeList();
-      },
-      formatWeek(row)
-      {
-        switch (row.week) {
-          case '1':
-            return '星期一';
-          case '2':
-            return '星期二';
-          case '3':
-            return '星期三';
-          case '4':
-            return '星期四';
-          case '5':
-            return '星期五';
-          case '6':
-            return '星期六';
-          case 7:
-            return '星期天';
-        }
-      },
-      formatClock(clock){
-        return clock === 1 ? '是' : "否"
-      },
-      filterWeek(week, item)
-      {
-        return item.week == week;
+        this.orgList();
       },
       resetForm(formName) {
         this.$nextTick(function () {
@@ -400,27 +262,27 @@
       },
       openDialog()
       {
-        this.resetForm('overtimeForm');
+        this.resetForm('schoolOrganizationForm');
         this.dialog.visible = true;
-        this.dialog.title = '录入加班记录';
+        this.dialog.title = '添加机构';
       },
       handleSizeChange(val)
       {
         this.pageable.pageSize = val;
-        this.overtimeList();
+        this.orgList();
       },
       handleCurrentChange(val)
       {
         this.pageable.pageNum = val;
-        this.overtimeList();
+        this.orgList();
       },
-      saveOvertime()
+      saveOrg()
       {
-        this.$refs['overtimeForm'].validate((valid) => {
+        this.$refs['schoolOrganizationForm'].validate((valid) => {
           if (valid) {
-            this.$$api_overtime_save(this.overtime, (data) => {
+            this.$$api_school_organization_save(this.organization, (data) => {
               this.dialog.visible = false;
-              this.overtimeList();
+              this.orgList();
             });
           }
           else {
@@ -428,9 +290,21 @@
           }
         })
       },
-      overtimeList()
+      organizationDropdown(){
+        this.$$api_school_organization_dropdown({}, (data) => {
+          let orgNames = [];
+          data.obj.forEach((item, index) => {
+            orgNames.push({
+              text: item.name,
+              value: item.name
+            })
+          });
+          this.fields.name.filter.list = orgNames;
+        });
+      },
+      orgList()
       {
-        this.$$api_overtime_list({
+        this.$$api_school_organization_list({
           pageNum: this.pageable.pageNum,
           pageSize: this.pageable.pageSize,
           sorts: this.sortsJson,
