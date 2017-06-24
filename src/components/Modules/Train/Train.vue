@@ -78,7 +78,6 @@
         :label="fields.type.info.label"
         :min-width="fields.type.style.width"
         :align="fields.type.style.align"
-        :formatter="formatType"
         :filters="fields.type.filter.list"
         :filter-method="filterType"
         :filter-multiple="fields.type.filter.multiple">
@@ -160,7 +159,7 @@
                       label="机构"
                       prop='organization.id'>
           <!-- select,下拉框 -->
-          <el-select v-model="train.organization.id" placeholder="机构">
+          <el-select v-model="train.organization.id" placeholder="机构" @change="studentDropdown(train.organization.id)">
             <el-option
               v-for="item in fields.organization.filter.list"
               :key="item.value"
@@ -584,7 +583,6 @@
       }
     },
     created(){
-      this.studentDropdown();
       this.organizationDropdown();
       this.trainList();
     },
@@ -773,9 +771,9 @@
           this.fields.organization.filter.list = orgNames;
         });
       },
-      studentDropdown()
+      studentDropdown(orgId)
       {
-        this.$$api_student_dropdown({}, (data) => {
+        this.$$api_student_dropdown({orgId:orgId}, (data) => {
           let studentNames = [];
           data.obj.forEach((item, index) => {
             studentNames.push({

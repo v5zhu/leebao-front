@@ -9,7 +9,7 @@ import {
 
 module.exports = [{
   path: '/overtime',
-  name: '加班信息',
+  name: '加班记录',
   icon: 'inbox',
   component: Home,
   redirect: '/overtime/list',
