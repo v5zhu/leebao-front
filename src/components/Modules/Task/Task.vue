@@ -33,51 +33,22 @@
           </el-form>
         </template>
       </el-table-column>
-      <el-table-column
-        :prop="fields.jobName.info.prop"
-        :column-key="fields.jobName.info.prop"
-        :sortable="fields.jobName.info.sortable"
-        :label="fields.jobName.info.label"
-        :min-width="fields.jobName.style.width"
-        :align="fields.jobName.style.align">
+      <el-table-column :prop="'jobName'" :sortable="true" :label="'name'" :min-width="80" :align="'center'">
       </el-table-column>
-      <el-table-column
-        :prop="fields.cronExpression.info.prop"
-        :label="fields.cronExpression.info.label"
-        :min-width="fields.cronExpression.style.width"
-        :align="fields.cronExpression.style.align"
-        :sortable="fields.cronExpression.info.sortable">
+      <el-table-column :prop="'cronExpression'" :sortable="true" :label="'cron'" :min-width="120" :align="'center'">
       </el-table-column>
-      <el-table-column
-        :label="fields.jobStatus.info.label"
-        :min-width="fields.jobStatus.style.width"
-        :align="center">
+      <el-table-column :label="'status'" :min-width="80" :align="'center'">
         <template scope="scope" v-show="scope.row.jobStatus==1">
           <i class="el-icon-loading"></i>
         </template>
       </el-table-column>
-      <el-table-column
-        :prop="fields.beanId.info.prop"
-        :label="fields.beanId.info.label"
-        :min-width="fields.beanId.style.width"
-        :align="fields.beanId.style.align"
-        :sortable="fields.beanId.info.sortable">
+      <el-table-column :prop="'beanId'" :label="'bean'" :min-width="80" :align="'center'" :sortable="true">
       </el-table-column>
-      <el-table-column
-        :prop="fields.beanClass.info.prop"
-        :label="fields.beanClass.info.label"
-        :min-width="fields.beanClass.style.width"
-        :align="fields.beanClass.style.align"
-        :sortable="fields.beanClass.info.sortable">
+      <el-table-column :prop="'beanClass'" :label="'class'" :min-width="250" :align="'center'" :sortable="true">
       </el-table-column>
-      <el-table-column
-        :prop="fields.methodName.info.prop"
-        :label="fields.methodName.info.label"
-        :min-width="fields.methodName.style.width"
-        :align="fields.methodName.style.align"
-        :sortable="fields.methodName.info.sortable">
+      <el-table-column :prop="'methodName'" :label="'method'" :min-width="100" :align="'center'" :sortable="true">
       </el-table-column>
-      <el-table-column label="操作" :min-width="300">
+      <el-table-column label="操作" :min-width="250">
         <template scope="scope">
           <el-button
             size="small" type="info" class="icon-play"
@@ -141,7 +112,7 @@
           <!-- select,下拉框 -->
           <el-select v-model="task.jobStatus" placeholder="任务状态">
             <el-option
-              v-for="item in fields.jobStatus.filter.list"
+              v-for="item in jobStatus"
               :key="item.value"
               :label="item.text"
               :value="item.value">
@@ -159,7 +130,7 @@
           <!-- select,下拉框 -->
           <el-select v-model="task.isConcurrent" placeholder="是否并发">
             <el-option
-              v-for="item in fields.isConcurrent.filter.list"
+              v-for="item in yesOrNo"
               :key="item.value"
               :label="item.text"
               :value="item.value">
@@ -171,19 +142,19 @@
                       label="Bean Id"
                       prop='beanId'>
           <!-- select,下拉框 -->
-          <el-select v-model="task.beanId" placeholder="请选择Bean Id">
+          <el-select v-model="task.beanId" placeholder="请选择Bean Id" @change="getClassFullname(task.beanId)">
             <el-option
               v-for="item in beanNames"
-              :key="item.value"
-              :label="item.text"
-              :value="item.value">
+              :key="item"
+              :label="item"
+              :value="item">
             </el-option>
           </el-select>
         </el-form-item>
         <el-form-item class='edit-form'
                       label="Bean Class"
                       prop='beanClass'>
-          <el-input v-model="task.beanClass" placeholder='Bean Class'></el-input>
+          <el-input v-model="task.beanClass" placeholder='Bean Class' @blur="listMethods(task.beanId)"></el-input>
         </el-form-item>
         <el-form-item class='edit-form'
                       label="执行方法"
@@ -192,9 +163,9 @@
           <el-select v-model="task.methodName" placeholder="请选择要执行的方法">
             <el-option
               v-for="item in methodNames"
-              :key="item.value"
-              :label="item.text"
-              :value="item.value">
+              :key="item"
+              :label="item"
+              :value="item">
             </el-option>
           </el-select>
         </el-form-item>
@@ -222,7 +193,16 @@
       return {
         sortsJson: [],
         filtersJson: {},
-        yesOrNo: [{value: '0', text: '否'}, {value: '1', text: '是'}],
+        jobStatus: [
+          {value: '0', text: '初创'},
+          {value: '1', text: '运行'},
+          {value: '2', text: '暂停'},
+          {value: '3', text: '停止'}
+        ],
+        yesOrNo: [
+          {value: '0', text: '否'},
+          {value: '1', text: '是'}
+        ],
         task: {
           jobId: '',
           jobName: '',
@@ -279,148 +259,12 @@
           hasPreviousPage: false,
           list: []
         },
-        pageSizes: [5, 10, 20, 50, 100],
-        fields: {
-          jobName: {
-            info: {
-              prop: 'jobName',
-              label: 'Name',
-              sortable: true
-            },
-            filter: {},
-            style: {
-              width: '80',
-              align: 'center'
-            }
-          },
-          jobGroup: {
-            info: {
-              prop: 'jobGroup',
-              label: 'Group',
-              sortable: true
-            },
-            filter: {
-              list: [],
-              multiple: false
-            },
-            style: {
-              width: '80',
-              align: 'center'
-            }
-          },
-          jobStatus: {
-            info: {
-              prop: 'jobStatus',
-              label: 'Status',
-              sortable: true
-            },
-            filter: {},
-            style: {
-              width: '90',
-              align: 'center'
-            }
-          },
-          cronExpression: {
-            info: {
-              prop: 'cronExpression',
-              label: 'Cron',
-              sortable: false
-            },
-            filter: {},
-            style: {
-              width: '100',
-              align: 'center'
-            }
-          },
-          isConcurrent: {
-            info: {
-              prop: 'isConcurrent',
-              label: 'Concurrent',
-              sortable: false
-            },
-            filter: {},
-            style: {
-              width: '90',
-              align: 'center'
-            }
-          },
-          beanId: {
-            info: {
-              prop: 'beanId',
-              label: 'Bean Id',
-              sortable: false
-            },
-            filter: {},
-            style: {
-              width: '90',
-              align: 'center'
-            }
-          },
-          beanClass: {
-            info: {
-              prop: 'beanClass',
-              label: 'Bean Class',
-              sortable: false
-            },
-            filter: {},
-            style: {
-              width: '250',
-              align: 'center'
-            }
-          },
-          methodName: {
-            info: {
-              prop: 'methodName',
-              label: 'Method',
-              sortable: false
-            },
-            filter: {},
-            style: {
-              width: '90',
-              align: 'center'
-            }
-          },
-          description: {
-            info: {
-              prop: 'description',
-              label: 'description',
-              sortable: false
-            },
-            filter: {},
-            style: {
-              width: '90',
-              align: 'center'
-            }
-          },
-          createTime: {
-            info: {
-              prop: 'createTime',
-              label: 'Create Time',
-              sortable: false
-            },
-            filter: {},
-            style: {
-              width: '90',
-              align: 'center'
-            }
-          },
-          updateTime: {
-            info: {
-              prop: 'updateTime',
-              label: 'Update Time',
-              sortable: false
-            },
-            filter: {},
-            style: {
-              width: '90',
-              align: 'center'
-            }
-          }
-        }
+        pageSizes: [5, 10, 20, 50, 100]
       }
     },
     created() {
       this.taskList();
+      this.listBeanNames();
     },
     filters: {
       formatDate1(time) {
@@ -520,6 +364,31 @@
         }, (data) => {
           this.pageInfo = data.data;
           this.dialog.visible = false;
+        });
+      },
+      listBeanNames() {
+        this.$$api_bean_names({
+          pageNum: this.pageInfo.pageNum,
+          pageSize: this.pageInfo.pageSize,
+          sorts: this.sortsJson,
+          filters: this.filtersJson
+        }, (data) => {
+          this.beanNames = data.data;
+          this.dialog.visible = false;
+        });
+      },
+      getClassFullname(beanId) {
+        this.$$api_bean_fullname({
+          beanName: beanId
+        }, (data) => {
+          this.task.beanClass = data.data;
+        });
+      },
+      listMethods(beanId) {
+        this.$$api_bean_methods({
+          beanName: beanId
+        }, (data) => {
+          this.methodNames = data.data;
         });
       }
     }

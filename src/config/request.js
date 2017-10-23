@@ -23,6 +23,10 @@ var request = [{
   module: 'task',
   name: '定时任务',
   list: require('./request/task.js')
+},{
+  module: 'bean',
+  name: 'spring bean',
+  list: require('./request/bean.js')
 }];
 
 module.exports = request;
