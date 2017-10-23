@@ -15,6 +15,12 @@
             <el-form-item label="job id:">
               <span>{{ props.row.jobId }}</span>
             </el-form-item>
+            <el-form-item label="job group:">
+              <span>{{ props.row.jobGroup }}</span>
+            </el-form-item>
+            <el-form-item label="job status:">
+              <span>{{ props.row.jobStatus }}</span>
+            </el-form-item>
             <el-form-item label="description:">
               <span>{{ props.row.description }}</span>
             </el-form-item>
@@ -28,38 +34,12 @@
         </template>
       </el-table-column>
       <el-table-column
-        :prop="fields.jobId.info.prop"
-        :label="fields.jobId.info.label"
-        :min-width="fields.jobId.style.width"
-        :align="fields.jobId.style.align"
-        :sortable="fields.jobId.info.sortable">
-      </el-table-column>
-      <el-table-column
         :prop="fields.jobName.info.prop"
         :column-key="fields.jobName.info.prop"
         :sortable="fields.jobName.info.sortable"
         :label="fields.jobName.info.label"
         :min-width="fields.jobName.style.width"
-        :align="fields.jobName.style.align"
-        :formatter="formatWeek"
-        :filters="fields.jobName.filter.list"
-        :filter-method="filterWeek"
-        :filter-multiple="fields.jobName.filter.multiple">
-      </el-table-column>
-      <el-table-column
-        :prop="fields.jobGroup.info.prop"
-        :label="fields.jobGroup.info.label"
-        :min-width="fields.jobGroup.style.width"
-        :align="fields.jobGroup.style.align"
-        :sortable="fields.jobGroup.info.sortable">
-      </el-table-column>
-      <el-table-column
-        :prop="fields.jobStatus.info.prop"
-        :label="fields.jobStatus.info.label"
-        :min-width="fields.jobStatus.style.width"
-        :align="fields.jobStatus.style.align"
-        :formatter="formatClock"
-        :sortable="fields.jobStatus.info.sortable">
+        :align="fields.jobName.style.align">
       </el-table-column>
       <el-table-column
         :prop="fields.cronExpression.info.prop"
@@ -73,6 +53,7 @@
         :label="fields.isConcurrent.info.label"
         :min-width="fields.isConcurrent.style.width"
         :align="fields.isConcurrent.style.align"
+        :formatter="formatConcurrent"
         :sortable="fields.isConcurrent.info.sortable">
       </el-table-column>
       <el-table-column
@@ -95,6 +76,31 @@
         :min-width="fields.methodName.style.width"
         :align="fields.methodName.style.align"
         :sortable="fields.methodName.info.sortable">
+      </el-table-column>
+      <el-table-column label="操作" :min-width="300">
+        <template scope="scope">
+          <el-button
+            size="small" type="info"
+            @click="handleEdit(scope.$index, scope.row)">启动
+          </el-button>
+          <el-button
+            size="small" type="success"
+            @click="handleEdit(scope.$index, scope.row)">暂停
+          </el-button>
+          <el-button
+            size="small" type="warning"
+            @click="handleEdit(scope.$index, scope.row)">停止
+          </el-button>
+          <el-button
+            size="small" type="info"
+            @click="handleEdit(scope.$index, scope.row)">编辑
+          </el-button>
+          <el-button
+            size="small"
+            type="danger"
+            @click="handleDelete(scope.$index, scope.row)">删除
+          </el-button>
+        </template>
       </el-table-column>
     </el-table>
     <template>
@@ -261,8 +267,8 @@
             ]
           }
         },
-        beanNames:[],
-        methodNames:[],
+        beanNames: [],
+        methodNames: [],
         pageInfo: {
           pageNum: 1,
           pageSize: 5,
@@ -275,34 +281,22 @@
         },
         pageSizes: [5, 10, 20, 50, 100],
         fields: {
-          jobId: {
-            info: {
-              prop: 'jobId',
-              label: 'Job Id',
-              sortable: true
-            },
-            filter: {},
-            style: {
-              width: '150',
-              align: 'center'
-            }
-          },
           jobName: {
             info: {
               prop: 'jobName',
-              label: 'Job Name',
+              label: 'Name',
               sortable: true
             },
             filter: {},
             style: {
-              width: '90',
+              width: '80',
               align: 'center'
             }
           },
           jobGroup: {
             info: {
               prop: 'jobGroup',
-              label: 'Job Group',
+              label: 'Group',
               sortable: true
             },
             filter: {
@@ -310,14 +304,14 @@
               multiple: false
             },
             style: {
-              width: '280',
+              width: '80',
               align: 'center'
             }
           },
           jobStatus: {
             info: {
               prop: 'jobStatus',
-              label: 'Job Status',
+              label: 'Status',
               sortable: true
             },
             filter: {},
@@ -329,12 +323,12 @@
           cronExpression: {
             info: {
               prop: 'cronExpression',
-              label: 'Cron Expression',
+              label: 'Cron',
               sortable: false
             },
             filter: {},
             style: {
-              width: '90',
+              width: '100',
               align: 'center'
             }
           },
@@ -370,14 +364,14 @@
             },
             filter: {},
             style: {
-              width: '90',
+              width: '250',
               align: 'center'
             }
           },
           methodName: {
             info: {
               prop: 'methodName',
-              label: 'Method Name',
+              label: 'Method',
               sortable: false
             },
             filter: {},
@@ -436,9 +430,6 @@
       formatFullDate(time) {
         var date = new Date(time);
         return formatDate(date, 'yyyy-MM-dd hh:mm');
-      },
-      formatTaxi(taxi) {
-        return taxi === 1 ? '是' : "否"
       }
     },
     methods: {
@@ -464,29 +455,22 @@
         }
         this.taskList();
       },
-      formatWeek(row) {
-        switch (row.week) {
-          case 1:
-            return '星期一';
-          case 2:
-            return '星期二';
-          case 3:
-            return '星期三';
-          case 4:
-            return '星期四';
-          case 5:
-            return '星期五';
-          case 6:
-            return '星期六';
-          case 7:
-            return '星期天';
+      formatJobStatus(clock) {
+        if (clock.jobStatus == '1') {
+          return '运行中';
+        } else if (clock.jobStatus == '0') {
+          return '暂停中';
+        } else if (clock.jobStatus == '-1') {
+          return '已停止';
         }
       },
-      formatClock(clock) {
-        return clock === 1 ? '是' : "否"
-      },
-      filterWeek(week, item) {
-        return item.week == week;
+      formatConcurrent(row) {
+        console.log(row)
+        if (row.concurrent == 1) {
+          return '并发执行';
+        } else if (row.concurrent == 0) {
+          return '排队执行';
+        }
       },
       resetForm(formName) {
         this.$nextTick(function () {
@@ -521,6 +505,12 @@
           }
         })
       },
+      handleEdit(index, row) {
+
+      },
+      handleDelete(index, row) {
+
+      },
       taskList() {
         this.$$api_task_taskList({
           pageNum: this.pageInfo.pageNum,
@@ -530,8 +520,6 @@
         }, (data) => {
           this.pageInfo = data.data;
           this.dialog.visible = false;
-          console.log("返回数据:"+this.pageInfo);
-          console.log("返回数据:"+this.pageInfo);
         });
       }
     }
