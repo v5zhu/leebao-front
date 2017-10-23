@@ -49,12 +49,12 @@
         :sortable="fields.cronExpression.info.sortable">
       </el-table-column>
       <el-table-column
-        :prop="fields.isConcurrent.info.prop"
-        :label="fields.isConcurrent.info.label"
-        :min-width="fields.isConcurrent.style.width"
-        :align="fields.isConcurrent.style.align"
-        :formatter="formatConcurrent"
-        :sortable="fields.isConcurrent.info.sortable">
+        :label="fields.jobStatus.info.label"
+        :min-width="fields.jobStatus.style.width"
+        :align="center">
+        <template scope="scope" v-show="scope.row.jobStatus==1">
+          <i class="el-icon-loading"></i>
+        </template>
       </el-table-column>
       <el-table-column
         :prop="fields.beanId.info.prop"
@@ -80,25 +80,25 @@
       <el-table-column label="操作" :min-width="300">
         <template scope="scope">
           <el-button
-            size="small" type="info"
-            @click="handleEdit(scope.$index, scope.row)">启动
+            size="small" type="info" class="icon-play"
+            @click="handleEdit(scope.$index, scope.row)"><i class="el-icon-loading"></i>
           </el-button>
           <el-button
             size="small" type="success"
-            @click="handleEdit(scope.$index, scope.row)">暂停
+            @click="handleEdit(scope.$index, scope.row)"><i class="el-icon-time"></i>
           </el-button>
           <el-button
             size="small" type="warning"
-            @click="handleEdit(scope.$index, scope.row)">停止
+            @click="handleEdit(scope.$index, scope.row)"><i class="el-icon-minus"></i>
           </el-button>
           <el-button
             size="small" type="info"
-            @click="handleEdit(scope.$index, scope.row)">编辑
+            @click="handleEdit(scope.$index, scope.row)"><i class="el-icon-edit"></i>
           </el-button>
           <el-button
             size="small"
             type="danger"
-            @click="handleDelete(scope.$index, scope.row)">删除
+            @click="handleDelete(scope.$index, scope.row)"><i class="el-icon-delete"></i>
           </el-button>
         </template>
       </el-table-column>
