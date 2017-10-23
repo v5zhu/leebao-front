@@ -22,28 +22,14 @@ module.exports = {
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
     proxyTable: {
-      '/slsAdminQiniu': {
-        target: '//up-z2.qiniu.com',
-        changeOrigin: true,
-        pathRewrite: {
-          '^/slsAdminQiniu': ''
-        }
-      },
-      '/api/v1': {
-        target: 'http://120.77.172.143:22222',
+      '/aikafka': {
+        target: 'http://localhost:11000',
         // target: 'http://localhost:22222',
         changeOrigin: true,
         pathRewrite: {
-          '^/api/v1': '/api/v1'
+          '^/aikafka': '/aikafka'
         }
-      },
-      // '/slsAdminApi': {
-      //   target: 'http://slsadmin.api.sailengsi.com',
-      //   changeOrigin: true,
-      //   pathRewrite: {
-      //     '^/slsAdminApi': ''
-      //   }
-      // },
+      }
     },
     // CSS Sourcemaps off by default because relative paths are "buggy"
     // with this option, according to the CSS-Loader README

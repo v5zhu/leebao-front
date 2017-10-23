@@ -8,21 +8,21 @@ import {
 } from '../../components/';
 
 module.exports = [{
-  path: '/overtime',
-  name: '加班记录',
+  path: '/task',
+  name: '定时任务',
   icon: 'inbox',
   component: Home,
-  redirect: '/overtime/list',
+  redirect: '/task/list',
   children: [{
     path: 'list',
-    name: '加班管理',
+    name: '任务管理',
     icon: 'inbox',
     component: Content,
     children: [{
       path: '',
-      name: '录入加班',
+      name: '任务管理',
       icon: 'inbox',
-      component: Modules.Overtime
+      component: Modules.Task
     }]
   }]
 }];

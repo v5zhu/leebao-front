@@ -29,7 +29,4 @@ module.exports = [{
 	.concat(require('./router/manage.js'))
 	.concat(require('./router/components.js'))
 	.concat(require('./router/advance.js'))
-	.concat(require('./router/pregnancy.js'))
-	.concat(require('./router/toutiao.js'))
-	.concat(require('./router/overtime.js'))
-	.concat(require('./router/train.js'))
+	.concat(require('./router/task.js'))

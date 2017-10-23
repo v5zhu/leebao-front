@@ -11,54 +11,18 @@ var request = [{
   module: 'user',
   name: '用户管理',
   list: require('./request/user.js')
-}, {
-  module: 'article',
-  name: '文章管理',
-  list: require('./request/article.js')
-}, {
+},{
   module: 'order',
   name: '订单管理',
   list: require('./request/order.js')
 }, {
-  module: 'system',
-  name: '系统设置',
-  list: require('./request/system.js')
-}, {
   module: 'open',
   name: '第三方接入',
   list: require('./request/open.js')
-}, {
-  module: 'area',
-  name: '区域接口',
-  list: require('./request/area.js')
-}, {
-  module: 'forbid',
-  name: '禁忌接口',
-  list: require('./request/forbid.js')
-}, {
-  module: 'star',
-  name: '星级',
-  list: require('./request/star.js')
-}, {
-  module: 'toutiao',
-  name: '头条',
-  list: require('./request/toutiao.js')
-}, {
-  module: 'overtime',
-  name: '加班信息',
-  list: require('./request/overtime.js')
-}, {
-  module: 'school_organization',
-  name: '培训机构',
-  list: require('./request/schoolOrganization.js')
-}, {
-  module: 'student',
-  name: '学生信息',
-  list: require('./request/student.js')
-}, {
-  module: 'train',
-  name: '培训记录',
-  list: require('./request/train.js')
+},{
+  module: 'task',
+  name: '定时任务',
+  list: require('./request/task.js')
 }];
 
 module.exports = request;
