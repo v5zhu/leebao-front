@@ -154,7 +154,7 @@
         <el-form-item class='edit-form'
                       label="Bean Class"
                       prop='beanClass'>
-          <el-input v-model="task.beanClass" placeholder='Bean Class' @blur="listMethods(task.beanId)"></el-input>
+          <el-input v-model="task.beanClass" placeholder='Bean Class'  readonly></el-input>
         </el-form-item>
         <el-form-item class='edit-form'
                       label="执行方法"
@@ -382,6 +382,7 @@
           beanName: beanId
         }, (data) => {
           this.task.beanClass = data.data;
+          this.listMethods(beanId);
         });
       },
       listMethods(beanId) {
