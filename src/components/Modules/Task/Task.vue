@@ -62,6 +62,10 @@
             @click="switchStatus(scope.$index, scope.row)"><i class="el-icon-time"></i>
           </el-button>
           <el-button
+            size="small" type="success"  :disabled="scope.row.jobStatus!=1" title="恢复"
+            @click="switchStatus(scope.$index, scope.row)"><i class="el-icon-circle-cross"></i>
+          </el-button>
+          <el-button
             size="small" type="warning" :disabled="scope.row.jobStatus!=1 && scope.row.jobStatus!=2" title="停止"
             @click="switchStatus(scope.$index, scope.row)"><i class="el-icon-minus"></i>
           </el-button>
