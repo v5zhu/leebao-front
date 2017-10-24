@@ -54,24 +54,24 @@
       <el-table-column label="操作" :min-width="250">
         <template scope="scope">
           <el-button
-            size="small" type="info" class="icon-play" :disabled="scope.row.jobStatus==1"
-            @click="handleEdit(scope.$index, scope.row)"><i class="el-icon-caret-right"></i>
+            size="small" type="info" class="icon-play" :disabled="scope.row.jobStatus==1" title="运行"
+            @click="switchStatus(scope.$index, scope.row)"><i class="el-icon-caret-right"></i>
           </el-button>
           <el-button
-            size="small" type="success" :disabled="scope.row.jobStatus!=1"
-            @click="handleEdit(scope.$index, scope.row)"><i class="el-icon-time"></i>
+            size="small" type="success" :disabled="scope.row.jobStatus!=1" title="暂停"
+            @click="switchStatus(scope.$index, scope.row)"><i class="el-icon-time"></i>
           </el-button>
           <el-button
-            size="small" type="warning" :disabled="scope.row.jobStatus!=1 && scope.row.jobStatus!=2"
-            @click="handleEdit(scope.$index, scope.row)"><i class="el-icon-minus"></i>
+            size="small" type="warning" :disabled="scope.row.jobStatus!=1 && scope.row.jobStatus!=2" title="停止"
+            @click="switchStatus(scope.$index, scope.row)"><i class="el-icon-minus"></i>
           </el-button>
           <el-button
-            size="small" type="info" :disabled="scope.row.jobStatus!=3 && scope.row.jobStatus!=0"
+            size="small" type="info" :disabled="scope.row.jobStatus!=3 && scope.row.jobStatus!=0" title="编辑"
             @click="handleEdit(scope.$index, scope.row)"><i class="el-icon-edit"></i>
           </el-button>
           <el-button
             size="small"
-            type="danger" :disabled="scope.row.jobStatus!=3 && scope.row.jobStatus!=0"
+            type="danger" :disabled="scope.row.jobStatus!=3 && scope.row.jobStatus!=0" title="删除"
             @click="handleDelete(scope.$index, scope.row)"><i class="el-icon-delete"></i>
           </el-button>
         </template>
@@ -351,6 +351,9 @@
             return false;
           }
         })
+      },
+      switchStatus(index, row) {
+
       },
       handleEdit(index, row) {
 
