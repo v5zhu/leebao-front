@@ -38,8 +38,11 @@
       <el-table-column :prop="'cronExpression'" :sortable="true" :label="'cron'" :min-width="120" :align="'center'">
       </el-table-column>
       <el-table-column :label="'status'" :min-width="80" :align="'center'">
-        <template scope="scope" v-show="scope.row.jobStatus==1">
-          <i class="el-icon-loading"></i>
+        <template scope="scope">
+          <i v-show="scope.row.jobStatus==0" class="el-icon-star-off"></i>
+          <i v-show="scope.row.jobStatus==1" class="el-icon-loading"></i>
+          <i v-show="scope.row.jobStatus==2" class="el-icon-time"></i>
+          <i v-show="scope.row.jobStatus==3" class="el-icon-minus"></i>
         </template>
       </el-table-column>
       <el-table-column :prop="'beanId'" :label="'bean'" :min-width="80" :align="'center'" :sortable="true">
@@ -51,24 +54,24 @@
       <el-table-column label="操作" :min-width="250">
         <template scope="scope">
           <el-button
-            size="small" type="info" class="icon-play"
-            @click="handleEdit(scope.$index, scope.row)"><i class="el-icon-loading"></i>
+            size="small" type="info" class="icon-play" :disabled="scope.row.jobStatus==1"
+            @click="handleEdit(scope.$index, scope.row)"><i class="el-icon-caret-right"></i>
           </el-button>
           <el-button
-            size="small" type="success"
+            size="small" type="success" :disabled="scope.row.jobStatus!=1"
             @click="handleEdit(scope.$index, scope.row)"><i class="el-icon-time"></i>
           </el-button>
           <el-button
-            size="small" type="warning"
+            size="small" type="warning" :disabled="scope.row.jobStatus!=1 && scope.row.jobStatus!=2"
             @click="handleEdit(scope.$index, scope.row)"><i class="el-icon-minus"></i>
           </el-button>
           <el-button
-            size="small" type="info"
+            size="small" type="info" :disabled="scope.row.jobStatus!=3 && scope.row.jobStatus!=0"
             @click="handleEdit(scope.$index, scope.row)"><i class="el-icon-edit"></i>
           </el-button>
           <el-button
             size="small"
-            type="danger"
+            type="danger" :disabled="scope.row.jobStatus!=3 && scope.row.jobStatus!=0"
             @click="handleDelete(scope.$index, scope.row)"><i class="el-icon-delete"></i>
           </el-button>
         </template>
@@ -154,7 +157,7 @@
         <el-form-item class='edit-form'
                       label="Bean Class"
                       prop='beanClass'>
-          <el-input v-model="task.beanClass" placeholder='Bean Class'  readonly></el-input>
+          <el-input v-model="task.beanClass" placeholder='Bean Class' readonly></el-input>
         </el-form-item>
         <el-form-item class='edit-form'
                       label="执行方法"
